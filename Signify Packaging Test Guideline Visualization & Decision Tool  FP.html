@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signify Packaging Test Guideline Visualization & Decision Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-900: #0f172a; --blue-800: #1e3a5f; --blue-700: #1d4ed8;
+    --blue-600: #2563eb; --blue-500: #3b82f6; --blue-100: #eff6ff;
+    --slate-900: #0f172a; --slate-800: #1e293b; --slate-600: #475569;
+    --slate-500: #64748b; --slate-400: #94a3b8; --slate-300: #cbd5e1;
+    --slate-200: #e2e8f0; --slate-100: #f1f5f9; --slate-50: #f8fafc;
+    --green-bg: #dcfce7; --green-border: #86efac; --green-text: #166534;
+    --red-bg: #fef2f2; --red-border: #fca5a5; --red-text: #991b1b;
+    --amber-bg: #fefce8; --amber-border: #fde047; --amber-text: #854d0e;
+    --font: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font); background: linear-gradient(160deg, #f0f4ff 0%, #e8ecf4 40%, #f5f0eb 100%);
+    min-height: 100vh; padding: 24px 16px; color: var(--slate-800);
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--blue-800), var(--blue-600));
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(37,99,235,0.2);
+  }
+  .header-top { display: flex; align-items: center; gap: 14px; }
+  .header-icon {
+    width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+  }
+  .header h1 { color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+  .header p { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px; font-weight: 500; }
+  .path-banner {
+    margin-top: 18px; padding: 12px 18px; border-radius: 10px;
+    background: rgba(255,255,255,0.12); display: flex;
+    justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .path-banner .lbl { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; }
+  .path-banner .val { color: #fff; font-size: 14px; font-weight: 800; }
+
+  /* Section Card */
+  .section {
+    background: #fff; border: 1px solid var(--slate-200); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: opacity 0.3s;
+  }
+  .section.muted { background: var(--slate-50); border: 1px dashed var(--slate-300); opacity: 0.55; box-shadow: none; }
+  .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
+  }
+  .section.muted .step-num { background: var(--slate-200); color: var(--slate-400); }
+  .section-title { font-size: 15px; font-weight: 700; }
+  .section.muted .section-title { color: var(--slate-400); }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0 16px; }
+  @media (max-width: 700px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* Form */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--slate-800); margin-bottom: 4px; }
+  .field-row { display: flex; align-items: center; gap: 8px; }
+  .field select, .field input[type="number"] {
+    width: 100%; max-width: 320px; padding: 8px 12px; border-radius: 8px;
+    border: 1.5px solid var(--slate-300); font-size: 13px; font-family: var(--font);
+    background: #fff; color: var(--slate-800); outline: none; transition: border-color 0.2s;
+  }
+  .field select:focus, .field input:focus { border-color: var(--blue-500); }
+  .field select:disabled, .field input:disabled {
+    background: var(--slate-100); color: var(--slate-400); cursor: not-allowed;
+  }
+  .field input[type="number"] { width: 140px; }
+  .hint { font-size: 11px; color: var(--slate-400); font-style: italic; white-space: nowrap; }
+  .unit { font-size: 12px; color: var(--slate-500); }
+  .section-hint { font-size: 11px; color: var(--slate-400); margin: -8px 0 12px; }
+
+  /* Info area */
+  .info-box { background: var(--slate-50); border-radius: 10px; padding: 12px 16px; margin-top: 8px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 12px; color: var(--slate-500); }
+  .info-grid b { color: var(--slate-800); }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid var(--slate-100);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .lbl { font-size: 13px; color: var(--slate-500); font-weight: 500; min-width: 180px; }
+  .info-row .val { font-size: 13px; color: var(--slate-800); font-weight: 500; text-align: right; max-width: 400px; white-space: pre-line; }
+  .info-row .val.hl { color: var(--blue-700); font-weight: 700; }
+
+  /* Badge */
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+  .badge-red { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .badge-blue { background: var(--blue-100); color: #1e40af; border: 1px solid #93c5fd; }
+  .badge-gray { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+
+  /* SIPP box */
+  .sipp-box { margin-top: 12px; padding: 12px 16px; border-radius: 10px; }
+  .sipp-box.eligible { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .sipp-box.not-eligible { background: var(--red-bg); border: 1px solid var(--red-border); }
+  .sipp-box.na { background: #f3f4f6; border: 1px solid #d1d5db; }
+  .sipp-row { display: flex; justify-content: space-between; align-items: center; }
+  .sipp-row .lbl { font-size: 13px; font-weight: 700; }
+  .sipp-detail { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; }
+
+  /* Result panel */
+  .result-panel {
+    background: linear-gradient(135deg, var(--slate-900), var(--blue-800));
+    border-radius: 16px; padding: 28px; margin-bottom: 18px;
+    box-shadow: 0 8px 32px rgba(15,23,42,0.3);
+  }
+  .result-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .result-head h2 { color: #fff; font-size: 17px; font-weight: 800; }
+  .result-card {
+    background: rgba(255,255,255,0.06); border-radius: 12px; padding: 16px 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .result-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .lbl { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 600; min-width: 200px; }
+  .result-row .val { font-size: 13px; color: #fff; font-weight: 600; text-align: right; max-width: 440px; white-space: pre-line; }
+
+  .cost-card { margin-top: 18px; }
+  .cost-card h3 { color: #93c5fd; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .cost-row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px;
+  }
+  .cost-row .lbl { color: rgba(255,255,255,0.5); }
+  .cost-row .val { color: #fff; font-weight: 600; }
+
+  .decision-box {
+    margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+  }
+  .decision-box.upgrade { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); }
+  .decision-box.keep { background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3); }
+  .decision-box .top { display: flex; justify-content: space-between; align-items: center; }
+  .decision-box .top .lbl { font-size: 14px; font-weight: 800; color: #fff; }
+  .decision-box .bottom { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.6); }
+  .decision-box .bottom b { color: #fff; }
+
+  .na-cost {
+    margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500;
+  }
+
+  .footer { text-align: center; padding: 8px 0 24px; font-size: 11px; color: var(--slate-400); }
+
+  /* Flowchart */
+  .fc-node { padding:8px 16px; border-radius:8px; font-size:11px; font-weight:600; text-align:center; max-width:320px; line-height:1.4; white-space:pre-line; }
+  .fc-start { background:rgba(59,130,246,0.3); color:#93c5fd; border:1px solid rgba(59,130,246,0.4); }
+  .fc-decision { background:rgba(251,191,36,0.2); color:#fde68a; border:1px solid rgba(251,191,36,0.3); transform:rotate(0deg); }
+  .fc-process { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.15); }
+  .fc-end { background:rgba(34,197,94,0.25); color:#86efac; border:1.5px solid rgba(34,197,94,0.4); font-weight:800; }
+  .fc-arrow { width:2px; height:16px; background:rgba(255,255,255,0.2); }
+  .fc-label { font-size:10px; color:rgba(255,255,255,0.4); font-weight:500; padding:2px 0; }
+
+  /* Print */
+@media print {
+  @page {
+    size: auto;
+    margin: 12mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 默认隐藏整个应用 */
+  #app {
+    display: none !important;
+  }
+
+  /* 打印模式下只显示 pdfReport */
+  body.printing-pdf #pdfReport {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    border: none !important;
+    position: static !important;
+  }
+
+  body.printing-pdf #pdfReport table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  body.printing-pdf #pdfReport table td {
+    border: 1px solid #d1d5db;
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="header-icon">📦</div>
+      <div>
+        <h1>Signify Packaging Test Guideline Visualization & Decision Tool</h1>
+        <p>适用于在线及线下销售消费品包装测试标准选择 · Online (Amazon/D2C) & Offline (Retail/RDC)</p>
+      </div>
+    </div>
+    <div class="path-banner">
+      <span class="lbl">当前决策路径 Current Decision Path</span>
+      <span class="val" id="hdr-path">—</span>
+    </div>
+  </div>
+
+  <!-- STEP 0: Channel Selection -->
+  <div class="section" id="sec0" style="border:2px solid var(--blue-600)">
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">0</div><span class="section-title">🏪 Sales Channel 销售渠道选择</span></div>
+    <div style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.6">
+      请先选择产品的销售渠道类型，不同渠道适用不同的包装测试标准。<br>
+      Select your sales channel first — different channels require different packaging test standards.
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="btnOnline" onclick="switchChannel('online')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--blue-600);background:var(--blue-600);color:#fff;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
+        🌐 Online 在线渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">Amazon / D2C / 电商平台<br>适用 SIPP/ISTA 6A/Self-Drop 等标准</span>
+      </button>
+      <button id="btnOffline" onclick="switchChannel('offline')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
+        🏬 Offline 线下渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">零售 / 分销 / RDC 配送中心<br>适用 ISTA 3-Lite / UND1400 等标准</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ ONLINE PANEL ═══ -->
+  <div id="onlinePanel">
+
+  <!-- STEP 1 -->
+  <div class="section" id="sec1">
+    <div class="section-head"><div class="step-num">1</div><span class="section-title">🌍 Region & Channel 地区与渠道</span></div>
+    <div class="grid-2">
+      <div class="field"><label>Sales Region 销售地区</label>
+        <select id="region" onchange="recalc()">
+          <option>North America (US/CA)</option><option>Europe & Rest of World (excl. China)</option>
+          <option selected>China Online</option><option>Other local/3rd party/customer</option>
+        </select>
+      </div>
+      <div class="field"><label>Product Family 产品系列</label>
+        <select id="productFamily" onchange="recalc()">
+          <option>LED Lamps</option><option>LED LUM</option><option>HUE</option>
+          <option selected>WIZ</option><option>Other (其他消费品 Consumer Products not listed above)</option>
+        </select>
+      </div>
+      <div class="field"><label>Amazon销售? Is sold on Amazon?</label>
+        <div class="field-row">
+          <select id="amazonSold" onchange="recalc()"><option selected>Yes</option><option>No</option></select>
+          <span class="hint" id="amazonHint"></span>
+        </div>
+      </div>
+      <div class="field"><label>客户指定标准? Customer standard?</label>
+        <select id="customerStandard" onchange="recalc()"><option>Yes</option><option selected>No</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="section" id="sec2">
+    <div class="section-head"><div class="step-num">2</div><span class="section-title">📐 Package Information 包装信息</span></div>
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:13px;font-weight:600;color:var(--slate-600)">Unit 单位:</span>
+      <div style="display:inline-flex;border-radius:8px;overflow:hidden;border:1.5px solid var(--slate-300)">
+        <button id="btnMetric" onclick="switchUnit('metric')" style="padding:6px 16px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:var(--font);background:var(--blue-600);color:#fff;transition:all 0.2s">Metric 公制 (mm/kg)</button>
+        <button id="btnImperial" onclick="switchUnit('imperial')" style="padding:6px 16px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:var(--font);background:#fff;color:var(--slate-600);transition:all 0.2s">Imperial 英制 (in/lb)</button>
+      </div>
+    </div>
+    <div id="upNote" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1e40af;line-height:1.6;display:none">
+      ℹ️ 请输入产品的 <b>单品运输包装 (UP)</b> 尺寸和重量。此包装应为可通过内部 Global Online Test 的标准运输包装。<br>
+      Enter the <b>Unit Pack (UP)</b> dimensions and weight — the shipping-ready packaging that passes internal Global Online Test.
+    </div>
+    <div class="grid-4">
+      <div class="field"><label id="lbl_length">Length 长 (mm)</label><div class="field-row"><input type="number" id="length" value="400" onchange="recalc()" oninput="recalc()"><span class="unit" id="unit_dim">mm</span></div></div>
+      <div class="field"><label id="lbl_width">Width 宽 (mm)</label><div class="field-row"><input type="number" id="width" value="300" onchange="recalc()" oninput="recalc()"><span class="unit" id="unit_dim2">mm</span></div></div>
+      <div class="field"><label id="lbl_height">Height 高 (mm)</label><div class="field-row"><input type="number" id="height" value="10" onchange="recalc()" oninput="recalc()"><span class="unit" id="unit_dim3">mm</span></div></div>
+      <div class="field"><label id="lbl_weight">Weight 重量 (kg)</label><div class="field-row"><input type="number" id="weight" value="5" step="0.1" onchange="recalc()" oninput="recalc()"><span class="unit" id="unit_wt">kg</span></div></div>
+    </div>
+    <div class="info-box">
+      <div class="info-grid">
+        <div>Sorted (mm): <b id="sortedMm"></b></div>
+        <div>Unit Weight: <b id="unitWtLb"></b></div>
+        <div>Dim Weight: <b id="dimWtLb"></b></div>
+        <div>Sorted (in): <b id="sortedIn"></b></div>
+        <div>Billable Weight: <b id="billWt"></b></div>
+        <div>Girth (L+2H+2W): <b id="girthVal"></b></div>
+        <div style="grid-column:span 3">SIPP Category: <span id="dimTierBadge" class="badge badge-blue"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="section" id="sec3">
+    <div class="section-head"><div class="step-num">3</div><span class="section-title">🔍 SIPP Exclusion Check 排除项检查</span></div>
+    <div class="section-hint" id="exclusionHint"></div>
+    <div class="grid-2">
+      <div class="field"><label>含锂电池? Lithium Battery?</label><select id="lithiumBattery" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+      <div class="field"><label>挂钩/吊牌? PinFlap/Header?</label><select id="pinFlap" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+      <div class="field"><label>开窗? Window/Cut-outs?</label><select id="windowCut" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+      <div class="field"><label>圆柱/球形? Cylindrical/Spherical?</label><select id="cylindrical" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+      <div class="field"><label>L形包装? L-shaped box?</label><select id="lShaped" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+      <div class="field"><label>危险品? Hazardous item?</label><select id="hazardous" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
+    </div>
+    <div class="info-row"><span class="lbl">排除项结果 Exclusion Result</span><span class="val hl" id="exclusionResult"></span></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="section" id="sec4">
+    <div class="section-head"><div class="step-num">4</div><span class="section-title">⚖️ SIPP Size & Weight 尺寸重量</span></div>
+    <div class="grid-2">
+      <div class="info-row"><span class="lbl">尺寸档位 Dimension Size Tier</span><span class="val" id="dimTierVal"></span></div>
+      <div class="info-row"><span class="lbl">重量档位 Weight Tier</span><span class="val" id="weightTierVal"></span></div>
+      <div class="info-row"><span class="lbl">最小尺寸 Min size ≥6×4×0.375 in?</span><span id="minSizeVal" class="badge badge-green"></span></div>
+      <div class="info-row"><span class="lbl">重量 Weight ≤ 50 lb?</span><span id="weightOkVal" class="badge badge-green"></span></div>
+    </div>
+    <div class="sipp-box" id="sippBox">
+      <div class="sipp-row"><span class="lbl">SIPP Eligible Overall? SIPP总体合格?</span><span id="sippBadge" class="badge badge-gray"></span></div>
+      <div id="sippReason" style="font-size:12px;color:#991b1b;margin-top:6px"></div>
+      <div class="sipp-detail"><span>Chargeback: <b id="cbApplies"></b></span><span id="cbFeeSpan"></span></div>
+    </div>
+
+    <!-- Overbox Impact Estimator -->
+    <div id="overboxSection" style="display:none;margin-top:12px">
+      <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:16px 20px">
+        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📦 Overbox 影响估算 Overbox Impact Estimator</div>
+        <div style="font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.6">
+          如果不通过SIPP认证, Amazon可能会对产品加外箱(overbox)发货。以下估算overbox后的尺寸变化和费用影响。<br>
+          If not SIPP certified, Amazon may add an overbox. Below estimates the dimension change and cost impact.
+        </div>
+        <div class="grid-2">
+          <div class="info-row"><span class="lbl">原包装尺寸 Original Size</span><span class="val" id="ob_origSize"></span></div>
+          <div class="info-row"><span class="lbl">原尺寸档位 Original Size Tier</span><span class="val" id="ob_origTier"></span></div>
+          <div class="info-row"><span class="lbl">估算Overbox尺寸 Est. Overbox Size</span><span class="val" style="color:#991b1b;font-weight:700" id="ob_newSize"></span></div>
+          <div class="info-row"><span class="lbl">Overbox后尺寸档位 Size Tier after Overbox</span><span class="val" style="font-weight:700" id="ob_newTier"></span></div>
+          <div class="info-row"><span class="lbl">匹配Amazon箱号 Matched Amazon Box Code</span><span class="val" id="ob_boxCode"></span></div>
+          <div class="info-row"><span class="lbl">是否从Sortable变Non-Sortable? Sortable→Non-Sortable?</span><span class="val" style="font-weight:700" id="ob_tierJump"></span></div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,158,11,0.3)">
+          <div style="font-size:13px;font-weight:700;color:#78350f;margin-bottom:8px">💰 不做SIPP的最坏年度成本估算 Worst-case Annual Cost (without SIPP)</div>
+          <div class="info-row"><span class="lbl">SIOC罚款 SIOC Chargeback/Packaging Fee</span><span class="val" style="color:#991b1b" id="ob_annCB"></span></div>
+          <div class="info-row"><span class="lbl">FBA费率跳档差 FBA Tier Jump Cost</span><span class="val" style="color:#991b1b" id="ob_annJump"></span></div>
+          <div class="info-row"><span class="lbl">预处理费 Prep Fee (估算 Est. bagging/bubble)</span><span class="val" style="color:#991b1b" id="ob_annPrep"></span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:4px;border-top:2px solid #f59e0b;font-size:14px">
+            <span style="font-weight:800;color:#78350f">不做SIPP总年度额外成本 Total Annual Extra Cost without SIPP</span>
+            <span style="font-weight:800;color:#991b1b;font-size:16px" id="ob_totalAnn"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="section" id="sec5">
+    <div class="section-head"><div class="step-num">5</div><span class="section-title">🔧 Product Properties 产品属性</span></div>
+    <div class="field"><label>Product fragility 产品易碎性</label>
+      <select id="fragility" onchange="recalc()">
+        <option>Non-fragile 非易碎</option><option selected>Fragile (glass) 易碎(含玻璃)</option><option>Fragile (no glass) 易碎(非玻璃)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="section" id="sec6">
+    <div class="section-head"><div class="step-num">6</div><span class="section-title">💰 Cost Inputs 成本输入 (Amazon SIPP Path)</span></div>
+    <div class="section-hint" id="costHint"></div>
+    <div class="grid-3">
+      <div class="field"><label>当前包装成本 Pack cost (USD/pc)</label><div class="field-row"><input type="number" id="packCost" value="1" step="0.01" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div></div>
+      <div class="field"><label>年总预测量 Annual total forecast</label><div class="field-row"><input type="number" id="totalForecast" value="10000" onchange="recalc()" oninput="recalc()"><span class="unit">units</span></div></div>
+      <div class="field"><label>Amazon占比 Amazon share of total</label><div class="field-row"><input type="number" id="amazonSharePct" value="2" step="0.1" min="0" max="100" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div>
+        <div style="font-size:10px;color:var(--slate-400);margin-top:2px">= <span id="amazonUnitsCalc">200</span> Amazon units</div>
+      </div>
+      <div class="field"><label>SIPP达标包装增加成本比例 Pack cost increase % for SIPP compliance</label>
+        <select id="improvementLevel" onchange="recalc()"><option selected>Small</option><option>Medium</option><option>Large</option><option>Custom</option></select>
+        <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Small=10% · Medium=25% · Large=50% 在现有包装成本基础上增加的比例，用于达到Amazon SIPP试验要求<br>(estimated additional cost on current pack to pass Amazon SIPP test)</div>
+      </div>
+      <div class="field" id="customImpField" style="display:none"><label>自定义改善% Custom improvement %</label><div class="field-row"><input type="number" id="customImpPct" value="15" step="1" min="0" max="200" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div></div>
+      <div class="field"><label>测试费 Test+cert cost (USD)</label><div class="field-row"><input type="number" id="testCertCost" value="800" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div>
+        <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Fragile → ~$800 (3rd-party certified lab, e.g. ISTA 6A)<br>Non-fragile self-test → $0 (internal drop test)</div>
+      </div>
+      <div class="field"><label>摊销年数 Amortization years</label><div class="field-row"><input type="number" id="amortYears" value="1" min="1" onchange="recalc()" oninput="recalc()"><span class="unit">years</span></div>
+        <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Test cost spread over how many years (test fee ÷ years)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-panel">
+    <div class="result-head"><span style="font-size:22px">🎯</span><h2>包装试验路径选择结果 PACKAGING TEST PATH RESULT</h2></div>
+
+    <!-- Dynamic Flowchart -->
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
+      <div id="flowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-row"><span class="lbl">Decision Path 决策路径</span><span class="val" id="r_dp"></span></div>
+      <div class="result-row"><span class="lbl">包装路线 Packaging Route</span><span class="val" id="r_pkg"></span></div>
+      <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val" id="r_std"></span></div>
+      <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val" id="r_method"></span></div>
+      <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val" id="r_samp"></span></div>
+      <div class="result-row"><span class="lbl">试验程序 Test Procedure</span><span class="val" id="r_proc"></span></div>
+      <div class="result-row" style="border-bottom:none"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="r_basis"></span></div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.7);">
+        📎 Referenced Test Documents
+      </div>
+      <div id="r_docs" style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.8"></div>
+    </div>
+
+    <!-- Cost Comparison - detailed visual (shown for all Amazon SIPP-eligible products) -->
+    <div id="costCompareCard" style="display:none;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.15)">
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:14px">⚖️ 包装升级 vs 不做SIPP 年度成本对比 Packaging Upgrade vs No-SIPP Annual Cost</div>
+
+        <!-- Two columns -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+          <!-- Left: Upgrade SIPP -->
+          <div id="ccLeft" style="flex:1;min-width:220px;background:rgba(5,150,105,0.15);border:1.5px solid rgba(5,150,105,0.4);border-radius:10px;padding:14px">
+            <div style="font-size:13px;font-weight:700;color:#86efac;margin-bottom:10px">🅰️ 升级包装做SIPP Upgrade to SIPP</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.8">
+              <div>包装成本增加 Pack cost increase: <b id="cc_impPct" style="color:#fff"></b></div>
+              <div>每件增量 Incremental/pc: <b id="cc_inc" style="color:#fff"></b></div>
+              <div>年度包装增量 Annual pack increase: <b id="cc_annPack" style="color:#fff"></b></div>
+              <div>测试认证费(摊销) Test cost (amortized): <b id="cc_testCost" style="color:#fff"></b></div>
+            </div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(5,150,105,0.3)">
+              <div style="font-size:11px;color:rgba(255,255,255,0.5)">年度总升级成本 Total Annual Upgrade Cost</div>
+              <div style="font-size:20px;font-weight:800;color:#86efac" id="cc_totalUp"></div>
+            </div>
+          </div>
+          <!-- Right: Keep / No SIPP -->
+          <div id="ccRight" style="flex:1;min-width:220px;background:rgba(220,38,38,0.12);border:1.5px solid rgba(220,38,38,0.35);border-radius:10px;padding:14px">
+            <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">🅱️ 不做SIPP (Amazon加外箱) No SIPP (Amazon Overbox)</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.8">
+              <div>SIOC Chargeback 罚款: <b id="cc_cb" style="color:#fff"></b></div>
+              <div>FBA费率跳档差 FBA Tier Jump: <b id="cc_jump" style="color:#fff"></b></div>
+              <div>预处理费 Prep Fee: <b id="cc_prep" style="color:#fff"></b></div>
+              <div>损失SIPP折扣 Lost SIPP Discount: <b id="cc_lostDisc" style="color:#fff"></b></div>
+              <div>Amazon年销量 Amazon units: <b id="cc_units" style="color:#fff"></b></div>
+            </div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,38,38,0.3)">
+              <div style="font-size:11px;color:rgba(255,255,255,0.5)">年度总额外成本 Total Annual Extra Cost (含损失折扣)</div>
+              <div style="font-size:20px;font-weight:800;color:#fca5a5" id="cc_totalKeep"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verdict -->
+        <div id="cc_verdict" style="border-radius:8px;padding:12px 16px;text-align:center">
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">成本决策 Cost Decision</div>
+          <div style="font-size:15px;font-weight:800" id="cc_verdictText"></div>
+          <div style="font-size:11px;margin-top:6px;color:rgba(255,255,255,0.6)" id="cc_verdictSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Old cost card (hidden, kept for data compatibility) -->
+    <div class="result-card cost-card" id="costCard" style="display:none">
+      <h3>💲 成本对比 Cost Comparison</h3>
+      <div class="cost-row"><span class="lbl">改善比例 Improvement %</span><span class="val" id="r_imp"></span></div>
+      <div class="cost-row"><span class="lbl">升级后包装成本 Upgraded pack cost</span><span class="val" id="r_upc"></span></div>
+      <div class="cost-row"><span class="lbl">每件增量成本 Incremental cost/pc</span><span class="val" id="r_inc"></span></div>
+      <div class="cost-row"><span class="lbl">年度升级总成本 Annual upgrade cost</span><span class="val" id="r_auc"></span></div>
+      <div class="cost-row"><span class="lbl">年度额外成本(不做SIPP) Annual extra cost (without SIPP)</span><span class="val" id="r_acb"></span></div>
+      <div id="decisionBox" class="decision-box upgrade">
+        <div class="top"><span class="lbl">Cost Decision 成本决策</span><span id="r_cdBadge" class="badge badge-green"></span></div>
+        <div class="bottom"><span>盈亏平衡占比 Break-even share: <b id="r_be"></b></span><span>实际Amazon占比 Actual Amazon share: <b id="r_as"></b></span></div>
+      </div>
+    </div>
+
+    <!-- N/A cost display -->
+    <div class="na-cost" id="naCost" style="display:none"><span id="r_naText"></span></div>
+  </div>
+
+  <!-- STEP 7: FBA Cost Estimator -->
+  <div class="section" id="sec7">
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#f59e0b,#d97706)">7</div><span class="section-title" id="sec7_title">📊 包装决策对FBA成本的影响 Packaging Impact on Amazon FBA Cost</span></div>
+    <p style="font-size:11px;color:var(--slate-400);margin:-8px 0 12px;line-height:1.6">
+      本模块展示包装决策 (SIPP认证 vs 不做SIPP) 如何影响每件产品的 Amazon FBA 履约费、SIPP折扣和罚款。<br>
+      This module shows how packaging decisions (SIPP vs non-SIPP) affect per-unit FBA fulfillment fees, SIPP discounts, and chargebacks.<br>
+      <span style="color:var(--slate-500)">⚠️ 不包含仓储费、入库配置费、退货费等其他FBA费用 · Does NOT include storage, inbound placement, returns, or other FBA fees · 费率基于2026年1月15日生效的US FBA非旺季费率 · Based on 2026 US FBA non-peak rates (eff. Jan 15, 2026)</span>
+    </p>
+    <div class="grid-2">
+      <div class="field"><label>Product selling price (USD) 售价</label><div class="field-row"><input type="number" id="sellPrice" value="29.99" step="0.01" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div></div>
+      <div class="field"><label>Amazon Referral % 佣金比例</label><div class="field-row"><input type="number" id="referralPct" value="15" step="0.1" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div></div>
+    </div>
+
+    <!-- FBA Basic Info (always shown) -->
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px 20px;margin-top:8px">
+      <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px" id="fba_boxTitle">📦 FBA费用明细 FBA Fee Breakdown (per unit)</div>
+      <div class="info-row"><span class="lbl">SIPP尺寸档位 SIPP Size Tier (Step 4)</span><span class="val" id="fba_sippTier"></span></div>
+      <div class="info-row"><span class="lbl">FBA尺寸档位 FBA Size Tier (Amazon)</span><span class="val" style="font-weight:700" id="fba_tier"></span></div>
+      <div class="info-row"><span class="lbl">计费重量 Shipping Weight</span><span class="val" id="fba_shipWt"></span></div>
+      <div class="info-row"><span class="lbl">FBA Fulfillment Fee 履约费</span><span class="val" style="color:#b45309;font-weight:700" id="fba_fee"></span></div>
+      <div class="info-row" id="row_sippDisc"><span class="lbl">SIPP Discount SIPP折扣</span><span class="val" style="color:#166534" id="fba_sipp"></span></div>
+      <div class="info-row" id="row_afterSipp"><span class="lbl">SIPP后FBA费用 FBA Fee after SIPP</span><span class="val" style="font-weight:700" id="fba_afterSipp"></span></div>
+      <div class="info-row"><span class="lbl">Referral Fee 佣金</span><span class="val" id="fba_ref"></span></div>
+      <div class="info-row" id="row_cb"><span class="lbl">SIPP Chargeback 罚款</span><span class="val" style="color:#991b1b" id="fba_cb"></span></div>
+    </div>
+
+    <!-- MODE A: KEEP baseline - show current cost only -->
+    <div id="fba_modeKeep" style="display:none">
+      <div style="background:linear-gradient(135deg,#78350f,#92400e);border-radius:10px;padding:16px 20px;margin-top:12px;color:#fff">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 当前方案 Amazon Cost (per unit 每件) — 维持包装+接受罚款</div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">FBA Fulfillment Fee</span><span style="font-weight:700" id="fba_k_ful"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">Referral Fee 佣金</span><span style="font-weight:700" id="fba_k_ref"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">SIPP Chargeback 罚款</span><span style="font-weight:700;color:#fca5a5" id="fba_k_cb"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-size:14px;border-top:1px solid rgba(255,255,255,0.2);margin-top:4px">
+          <span style="color:#fff;font-weight:800">Total Amazon Cost 总计</span><span style="font-weight:800;color:#fde68a;font-size:16px" id="fba_k_total"></span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:8px">
+          Annual chargeback cost 年罚款: <b id="fba_k_annCb" style="color:#fca5a5"></b> · 
+          如升级SIPP可每件节省: <b id="fba_k_potSave" style="color:#86efac"></b>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE B: UPGRADE / NA - show SIPP comparison -->
+    <div id="fba_modeSipp" style="display:none">
+      <div style="background:linear-gradient(135deg,#1e3a5f,#0f172a);border-radius:10px;padding:16px 20px;margin-top:12px;color:#fff">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 SIPP Cost Comparison (per unit 每件) — 升级SIPP方案</div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">With SIPP (已认证,无罚款,有折扣)</span><span style="font-weight:700" id="fba_totalA"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">Without SIPP (未认证,有罚款)</span><span style="font-weight:700" id="fba_totalB"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">SIPP Savings per unit SIPP每件节省</span><span style="font-weight:700;color:#86efac" id="fba_saving"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px">
+          <span style="color:rgba(255,255,255,0.6)">Annual SIPP Savings 年度节省</span><span style="font-weight:700;color:#86efac" id="fba_annSaving"></span>
+        </div>
+      </div>
+
+      <!-- Break-even Analysis -->
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px 20px;margin-top:12px">
+        <div style="font-size:14px;font-weight:700;color:#166534;margin-bottom:10px">⚖️ Break-Even Analysis 盈亏平衡分析</div>
+        <div class="info-row"><span class="lbl">Packaging upgrade cost/pc 包装升级成本</span><span class="val" id="be_upCost"></span></div>
+        <div class="info-row"><span class="lbl">SIPP savings/pc SIPP每件节省</span><span class="val" id="be_savPc"></span></div>
+        <div class="info-row"><span class="lbl">Net benefit/pc 每件净收益</span><span class="val" style="font-weight:700" id="be_net"></span></div>
+        <div class="info-row"><span class="lbl">Break-even Amazon volume 盈亏平衡量</span><span class="val" style="font-weight:700" id="be_vol"></span></div>
+        <div class="info-row"><span class="lbl">ROI on packaging upgrade 包装升级ROI</span><span class="val" style="font-weight:700" id="be_roi"></span></div>
+      </div>
+    </div>
+
+    <p style="font-size:10px;color:var(--slate-400);margin-top:10px;line-height:1.5">
+      * 本模块仅计算与包装决策相关的FBA费用（履约费、SIPP折扣/罚款、Overbox跳档成本），不包含仓储费、入库配置费、低库存费、退货费等其他Amazon FBA费用。费率基于公开的2026年非旺季费率估算，实际费用可能有差异。佣金默认15%。完整FBA费用请参考 Amazon Seller Central Revenue Calculator。
+      <br>* This module only calculates packaging-related FBA costs (fulfillment fee, SIPP discount/chargeback, overbox tier-jump cost). Does NOT include storage, inbound placement, low-inventory-level, returns processing, or other Amazon FBA fees. Rates are estimates based on publicly available 2026 non-peak rate cards. Referral fee default 15%. For full FBA cost breakdown, refer to Amazon Seller Central Revenue Calculator.
+    </p>
+  </div>
+
+  </div><!-- end onlinePanel -->
+
+  <!-- ═══ OFFLINE PANEL ═══ -->
+  <div id="offlinePanel" style="display:none">
+
+    <!-- Offline Step 1: Product Info -->
+    <div class="section">
+      <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">1</div><span class="section-title">📦 Offline Product Info 线下产品信息</span></div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Product Family 产品系列</label>
+          <select id="off_productFamily" onchange="offlineCalc()">
+            <option selected>LED Lamps</option>
+            <option>LED LUM</option>
+            <option>HUE / WiZ</option>
+            <option>Other Consumer Products (其他消费品)</option>
+          </select>
+        </div>
+      
+        <div class="field" id="off_packField">
+          <label>Packed in Europe? 是否在欧洲完成线下包装/适用欧洲线下托盘运输?</label>
+          <select id="off_packEurope" onchange="offlineCalc()">
+            <option selected>Yes 是</option>
+            <option>No 否</option>
+          </select>
+        </div>
+      
+        <div class="field" id="off_regionField" style="display:none">
+          <label>LED LUM 销售/发运地区 LED LUM Sales/Shipping Region</label>
+          <select id="off_salesRegion" onchange="offlineCalc()">
+            <option selected>Europe offline + palletized transport (欧洲线下+托盘运输)</option>
+            <option>NAM / APR GMGC / Other offline flows (北美/亚太/其他线下)</option>
+          </select>
+        </div>
+      
+        <div class="field">
+          <label>客户/渠道指定标准? Customer/Channel specified standard?</label>
+          <select id="off_custStd" onchange="offlineCalc()">
+            <option>Yes 是</option>
+            <option selected>No 否</option>
+          </select>
+        </div>
+      
+        <div class="field">
+          <label>产品类型 Product Type</label>
+          <select id="off_prodType" onchange="offlineCalc()">
+            <option selected>Standard Consumer (LED Lamp/LUM/HUE/WiZ)</option>
+            <option>Special Project (特殊项目)</option>
+          </select>
+        </div>
+      
+        <div class="field">
+          <label>产品制造地区 Manufacturing Region (用于预处理条件)</label>
+          <select id="off_mfgRegion" onchange="offlineCalc()">
+            <option selected>APR (亚太地区, e.g. GMGC)</option>
+            <option>Non-APR (欧洲/北美/其他)</option>
+          </select>
+        </div>
+      </div>
+
+    <!-- Offline Result -->
+    <div class="result-panel">
+      <div class="result-head"><span style="font-size:22px">🎯</span><h2>线下包装试验路径结果 OFFLINE PACKAGING TEST RESULT</h2></div>
+
+      <!-- Offline Flowchart -->
+      <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
+        <div id="offFlowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-row"><span class="lbl">销售渠道 Sales Channel</span><span class="val">Offline 线下渠道 (零售/分销/RDC)</span></div>
+        <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val" id="off_r_std"></span></div>
+        <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val" id="off_r_method"></span></div>
+        <div class="result-row"><span class="lbl">试验基础 Test Basis</span><span class="val" id="off_r_basis"></span></div>
+        <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val" id="off_r_samp"></span></div>
+        <div class="result-row"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="off_r_dec"></span></div>
+      </div>
+
+      <!-- Pre-conditioning -->
+      <div class="result-card" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3)">
+        <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:10px">🌡️ 环境预处理 Environmental Pre-conditioning</div>
+        <div class="result-row"><span class="lbl">预处理条件 Conditions</span><span class="val" id="off_r_precon"></span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">预处理时间 Duration</span><span class="val" id="off_r_predur"></span></div>
+      </div>
+
+      <!-- Core Tests -->
+      <div class="result-card" style="background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.3)">
+        <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:10px">🔬 核心测试 Core Tests</div>
+        <div class="result-row"><span class="lbl">ISTA 3-Lite 测试 ISTA 3-Lite Test</span><span class="val" id="off_r_core"></span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">压缩测试 Compression Test</span><span class="val" id="off_r_compress"></span></div>
+      </div>
+
+      <!-- Optional Tests -->
+      <div class="result-card" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3)">
+        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📋 可选附加测试 Optional Supplementary Tests</div>
+        <div class="result-row"><span class="lbl">滚动测试 Rolling Test</span><span class="val" id="off_r_roll"></span></div>
+        <div class="result-row"><span class="lbl">倾倒测试 Toppling/Tipping Test</span><span class="val" id="off_r_topple"></span></div>
+        <div class="result-row"><span class="lbl">静态堆码测试 Static Stacking Test</span><span class="val" id="off_r_stack"></span></div>
+        <div style="font-size:11px;color:var(--slate-400);margin-top:8px;line-height:1.5">
+          可选测试根据产品几何形状、重心位置和历史损坏模式决定是否执行。<br>
+          Optional tests are applied based on product geometry, centre of gravity and historical damage modes.
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <!-- Notes -->
+<div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
+  <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7" id="off_r_notes"></div>
+</div>   <!-- ✅ 这里结束 Notes -->
+
+<!-- ✅ Documents 独立模块 -->
+<div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.7);">
+    📎 生成报告 Referenced Test Documents
+  </div>
+  <div id="off_r_docs" style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.8"></div>
+</div>
+      </div>
+    </div>
+
+    <p style="font-size:10px;color:var(--slate-400);margin-top:10px;line-height:1.5">
+      * Based on Signify Consumer Packaging Offline Packaging Test Guideline 20260128<br>
+      * 线下包装测试基于外箱(OB)进行。样品数量遵循BU质量要求。<br>
+      * Offline transport packaging tests are conducted based on OB (outer box). Test sample quantities shall follow the relevant BU quality requirements.
+    </p>
+  
+</div><!-- end offlinePanel -->
+<!-- PDF Export Actions -->
+<div style="display:flex;gap:12px;justify-content:center;margin:20px 0 10px 0;">
+    <button onclick="generatePdfReport()"
+      style="padding:10px 18px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;">
+      📄 Generate PDF Report
+    </button>
+  </div>
+
+<div class="footer" id="mainFooter">Based on Signify Online Packaging Test Guideline Draft V10 · Dim Divisor=139, Rounding=0.5lb · Amazon FBA 2026 Non-Peak Rates · Overbox Estimator: adaptive padding 1"-2" per side, community box database</div>
+</div>
+
+<!-- Hidden PDF Report -->
+<div id="pdfReport" style="display:none;background:#fff;color:#111;padding:24px 28px;font-family:var(--font);">
+  <div style="border-bottom:2px solid #1e3a5f;padding-bottom:10px;margin-bottom:18px;">
+    <div style="font-size:22px;font-weight:800;color:#1e3a5f;">Packaging Decision Result Report</div>
+    <div style="font-size:12px;color:#64748b;margin-top:4px;">
+      Signify Packaging Test Guideline Visualization & Decision Tool
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-top:4px;">
+      Generated on: <span id="pdf_gen_time"></span>
+    </div>
+  </div>
+
+  <div style="margin-bottom:18px;">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1e293b;">1. Selected Options</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <tbody id="pdf_input_rows"></tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:18px;">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1e293b;">2. Package Size / Weight</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <tbody id="pdf_dim_rows"></tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:18px;">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1e293b;">3. Test Result</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <tbody id="pdf_result_rows"></tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:18px;">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1e293b;">4. Key Calculation Results</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <tbody id="pdf_calc_rows"></tbody>
+    </table>
+  </div>
+
+  <div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1e293b;">5. Referenced Documents</div>
+    <div id="pdf_docs_rows" style="font-size:12px;line-height:1.8;"></div>
+  </div>
+</div>
+
+<script>
+// ─── Settings ───
+const CB_TIERS = [
+  {lb:0,fee:1.51},{lb:5,fee:1.68},{lb:10,fee:1.97},{lb:15,fee:2.60},
+  {lb:20,fee:2.92},{lb:25,fee:3.47},{lb:30,fee:3.60},{lb:35,fee:3.78},
+  {lb:40,fee:3.80},{lb:45,fee:4.04}
+];
+const IMP = {Small:0.1,Medium:0.25,Large:0.5};
+const DIV = 139, RND = 0.5;
+
+// Amazon standard overbox sizes (inches) - from boxdimensions.com community data
+// Sorted by volume for efficient matching
+const AMAZON_BOXES = [
+  {name:'0A0', l:9.25, w:6.5, h:2.25},
+  {name:'A0',  l:10.25, w:7, h:2.25},
+  {name:'A1',  l:10, w:7, h:3.25},
+  {name:'BP0', l:10, w:8, h:2},
+  {name:'10',  l:9, w:6, h:3.5},
+  {name:'20',  l:9, w:6, h:5.25},
+  {name:'A3',  l:12.5, w:9.5, h:3},
+  {name:'30',  l:11, w:8, h:4},
+  {name:'Z1',  l:12, w:9, h:4},
+  {name:'BM5', l:12, w:9, h:4},
+  {name:'50',  l:13, w:11.25, h:3.5},
+  {name:'1A1', l:11.5, w:8.5, h:4.25},
+  {name:'1A3', l:12.5, w:9.75, h:3.25},
+  {name:'56',  l:11, w:8, h:6},
+  {name:'W01', l:10, w:8, h:6.5},
+  {name:'60',  l:12, w:9, h:5.25},
+  {name:'1AD', l:13.5, w:9.5, h:3.5},
+  {name:'90',  l:11.5, w:7, h:8.5},
+  {name:'A4',  l:12, w:8.5, h:7},
+  {name:'1A5', l:13.5, w:11, h:4.75},
+  {name:'93',  l:12, w:9.5, h:7},
+  {name:'100', l:13.5, w:11, h:5.25},
+  {name:'80',  l:15, w:12, h:3},
+  {name:'81',  l:15, w:10, h:4.5},
+  {name:'N3',  l:16.25, w:12, h:5.25},
+  {name:'1B2', l:15.75, w:12.75, h:3.5},
+  {name:'E1',  l:16, w:9, h:4},
+  {name:'E4',  l:16, w:12, h:4},
+  {name:'1A7', l:14.5, w:8, h:7.25},
+  {name:'118', l:14.25, w:11, h:5.75},
+  {name:'128', l:12.75, w:10.5, h:8},
+  {name:'W02', l:12.75, w:11, h:8.5},
+  {name:'120', l:16, w:9.5, h:6.25},
+  {name:'1AB', l:14.25, w:9, h:6.25},
+  {name:'130', l:13.25, w:8.25, h:10.5},
+  {name:'1AE', l:13, w:10, h:8.25},
+  {name:'134', l:18, w:13, h:4},
+  {name:'Z4',  l:16, w:12.25, h:6.25},
+  {name:'110', l:18, w:14, h:3.5},
+  {name:'1BF', l:19.25, w:14, h:3.25},
+  {name:'143', l:16, w:12.25, h:7},
+  {name:'160', l:18.25, w:14, h:6.5},
+  {name:'Z16', l:16, w:14.25, h:6.5},
+  {name:'C1',  l:19, w:13, h:4},
+  {name:'E6',  l:16, w:12, h:8},
+  {name:'168', l:15.5, w:10, h:12},
+  {name:'Z05', l:16, w:10.25, h:10.25},
+  {name:'C2',  l:19, w:13, h:5.75},
+  {name:'Z14', l:18.25, w:13, h:5.5},
+  {name:'1B9', l:18.25, w:9, h:9},
+  {name:'Z06', l:16, w:14, h:10.25},
+  {name:'170', l:18, w:14, h:8},
+  {name:'K3',  l:18.75, w:13.25, h:6.25},
+  {name:'C3',  l:19, w:13, h:8},
+  {name:'176', l:18, w:14, h:10},
+  {name:'1AC', l:13.5, w:11.25, h:9.75},
+  {name:'1A9', l:14, w:12.5, h:9.5},
+  {name:'N6',  l:16, w:12, h:6.25},
+  {name:'K4',  l:19.5, w:13, h:8.25},
+  {name:'1B4', l:17.75, w:14.25, h:8.25},
+  {name:'S8',  l:26, w:15, h:4},
+  {name:'PC',  l:23.75, w:16, h:4},
+  {name:'179', l:22, w:16, h:8.25},
+  {name:'1BK', l:21, w:16, h:4.75},
+  {name:'2A5', l:20, w:11, h:4.25},
+  {name:'P8',  l:23, w:18.5, h:3.5},
+  {name:'BT2', l:24, w:15, h:3},
+  {name:'1BG', l:18, w:21.5, h:5.25},
+  {name:'2AA', l:24, w:16, h:4.25},
+  {name:'2A7', l:24, w:17.25, h:4.25},
+  {name:'P1',  l:21.25, w:15.25, h:6.25},
+  {name:'B0',  l:17.25, w:12, h:11.25},
+  {name:'1BA', l:19, w:12.25, h:11.25},
+  {name:'C4',  l:19, w:13.25, h:12},
+  {name:'2A0', l:20, w:16, h:7},
+  {name:'2B4', l:17, w:14, h:3.25},
+  {name:'PA',  l:20.25, w:13.75, h:12.25},
+  {name:'B11', l:28, w:16, h:6},
+  {name:'B05', l:22, w:15, h:5},
+  {name:'P4',  l:26, w:16.25, h:7.25},
+  {name:'2B5', l:15.5, w:13, h:12},
+  {name:'1BB', l:19.25, w:14.75, h:12.25},
+  {name:'B14', l:24, w:18, h:8},
+  {name:'PB',  l:23, w:15, h:12},
+  {name:'2A6', l:21, w:17, h:10.5},
+  {name:'2A8', l:26, w:19, h:9},
+  {name:'P7',  l:28, w:19.5, h:8.25},
+  {name:'S5',  l:22.25, w:18.25, h:12.25},
+  {name:'D4',  l:22, w:18, h:12},
+  {name:'F3',  l:26, w:19, h:8.75},
+  {name:'2BB', l:22, w:16.5, h:14},
+  {name:'P9',  l:27.5, w:22.5, h:8},
+  {name:'P2',  l:20.75, w:17.75, h:15.5},
+  {name:'3A1', l:31, w:20.5, h:10.5},
+].sort((a,b)=>(a.l*a.w*a.h)-(b.l*b.w*b.h));
+
+// Find the smallest Amazon standard box that can fit the product + cushioning
+// Amazon requires min 2" cushioning between product and box walls on all sides
+// In practice: 1-2" per side depending on product size
+function findOverbox(pLin, pWin, pHin){
+  // Adaptive padding: smaller products need less absolute padding
+  var maxDim = Math.max(pLin, pWin, pHin);
+  var padPerSide;
+  if(maxDim <= 10) padPerSide = 1.0;       // small products: 1" per side
+  else if(maxDim <= 18) padPerSide = 1.5;   // medium products: 1.5" per side
+  else padPerSide = 2.0;                     // large products: 2" per side (Amazon min requirement)
+  var pad = padPerSide * 2; // total per dimension (both sides)
+  var needL = pLin + pad, needW = pWin + pad, needH = pHin + pad;
+  // Sort product dims descending for matching
+  var need = [needL, needW, needH].sort((a,b)=>b-a);
+  for(var i=0; i<AMAZON_BOXES.length; i++){
+    var box = AMAZON_BOXES[i];
+    var bd = [box.l, box.w, box.h].sort((a,b)=>b-a);
+    if(bd[0]>=need[0] && bd[1]>=need[1] && bd[2]>=need[2]){
+      return {name:box.name, l:bd[0], w:bd[1], h:bd[2], vol:bd[0]*bd[1]*bd[2]};
+    }
+  }
+  // No standard box found, estimate custom overbox with adaptive padding
+  return {name:'Custom/Oversize', l:need[0], w:need[1], h:need[2], vol:need[0]*need[1]*need[2]};
+}
+
+// Determine if overbox pushes product into a different size tier
+function getSizeTierFromDims(longest, median, shortest, weightLb){
+  if(longest<=15 && median<=12 && shortest<=0.75 && weightLb<=1) return 'Small Standard';
+  if(longest<=18 && median<=14 && shortest<=8 && weightLb<=20) return 'Large Standard (Sortable)';
+  if(longest<=37 && median<=28 && shortest<=20 && weightLb<=50) return 'Small Bulky';
+  if(longest<=59 && median<=33 && shortest<=33 && weightLb<=50) return 'Large Bulky';
+  return 'Extra-Large';
+}
+
+function isSortableDims(longest, median, shortest, weightLb){
+  return longest<=18 && median<=14 && shortest<=8 && weightLb<=20;
+}
+
+var currentUnit = 'metric'; // 'metric' or 'imperial'
+
+function lookupCB(w){ let f=CB_TIERS[0].fee; for(const t of CB_TIERS) if(w>=t.lb) f=t.fee; return f; }
+function $(id){ return document.getElementById(id); }
+function val(id){ return $(id).value; }
+function num(id){ return parseFloat($(id).value)||0; }
+
+function switchUnit(unit){
+  if(unit===currentUnit) return;
+  var oldL=num('length'), oldW=num('width'), oldH=num('height'), oldWt=num('weight');
+  if(unit==='imperial'){
+    // Convert current mm/kg values to in/lb for display
+    $('length').value=(oldL/25.4).toFixed(2);
+    $('width').value=(oldW/25.4).toFixed(2);
+    $('height').value=(oldH/25.4).toFixed(2);
+    $('weight').value=(oldWt*2.20462262).toFixed(2);
+    $('lbl_length').textContent='Length 长 (in)';
+    $('lbl_width').textContent='Width 宽 (in)';
+    $('lbl_height').textContent='Height 高 (in)';
+    $('lbl_weight').textContent='Weight 重量 (lb)';
+    $('unit_dim').textContent='in'; $('unit_dim2').textContent='in'; $('unit_dim3').textContent='in';
+    $('unit_wt').textContent='lb';
+    $('btnImperial').style.background='var(--blue-600)'; $('btnImperial').style.color='#fff';
+    $('btnMetric').style.background='#fff'; $('btnMetric').style.color='var(--slate-600)';
+  } else {
+    // Convert current in/lb values to mm/kg for display
+    $('length').value=Math.round(oldL*25.4);
+    $('width').value=Math.round(oldW*25.4);
+    $('height').value=Math.round(oldH*25.4);
+    $('weight').value=(oldWt/2.20462262).toFixed(2);
+    $('lbl_length').textContent='Length 长 (mm)';
+    $('lbl_width').textContent='Width 宽 (mm)';
+    $('lbl_height').textContent='Height 高 (mm)';
+    $('lbl_weight').textContent='Weight 重量 (kg)';
+    $('unit_dim').textContent='mm'; $('unit_dim2').textContent='mm'; $('unit_dim3').textContent='mm';
+    $('unit_wt').textContent='kg';
+    $('btnMetric').style.background='var(--blue-600)'; $('btnMetric').style.color='#fff';
+    $('btnImperial').style.background='#fff'; $('btnImperial').style.color='var(--slate-600)';
+  }
+  currentUnit=unit;
+  recalc();
+}
+
+function badge(color, text){ return '<span class="badge badge-'+color+'">'+text+'</span>'; }
+
+function recalc(){
+  const region=val('region'), pf=val('productFamily'), amz=val('amazonSold'), cust=val('customerStandard');
+  // Read raw input values, then convert to mm/kg for internal calculations
+  var rawL=num('length'), rawW=num('width'), rawH=num('height'), rawWt=num('weight');
+  var L, W, H, wt;
+  if(currentUnit==='imperial'){
+    // Input is in/lb → convert to mm/kg
+    L=rawL*25.4; W=rawW*25.4; H=rawH*25.4; wt=rawWt/2.20462262;
+  } else {
+    // Input is mm/kg → use directly
+    L=rawL; W=rawW; H=rawH; wt=rawWt;
+  }
+  const excl=[val('lithiumBattery'),val('pinFlap'),val('windowCut'),val('cylindrical'),val('lShaped'),val('hazardous')];
+  const frag=val('fragility'), pc=num('packCost'), tf=num('totalForecast');
+  const amazonPct=num('amazonSharePct')/100;
+  const af=Math.round(tf*amazonPct);
+  $('amazonUnitsCalc').textContent=af.toLocaleString();
+  const il=val('improvementLevel'), tc=num('testCertCost'), ay=Math.max(num('amortYears'),1);
+  // Show/hide custom improvement field
+  $('customImpField').style.display=(il==='Custom')?'block':'none';
+
+  // Step 1
+  let dp;
+  if(region==='North America (US/CA)') dp='Amazon SIPP Path (NA默认 NA default)';
+  else if(region==='Europe & Rest of World (excl. China)') dp=amz==='Yes'?'Amazon SIPP Path':'Global Online Baseline';
+  else if(region==='China Online') dp=pf==='LED LUM'?'China LUM Online Testing':'Global Online Baseline';
+  else if(region==='Other local/3rd party/customer') dp=cust==='Yes'?'Customer Specified 客户指定标准':'Global Online Baseline';
+  else dp='Please select region';
+  const isAmz = dp.startsWith('Amazon SIPP Path');
+
+  // Hints & disable
+  let ah;
+  if(region==='North America (US/CA)') ah='← NA默认走Amazon, 此项无需选择';
+  else if(region==='China Online'||region==='Other local/3rd party/customer') ah='← 此地区不适用Amazon选项';
+  else ah='← Europe & RoW: 选择是否在Amazon销售';
+  $('amazonHint').textContent=ah;
+  $('amazonSold').disabled=(region!=='Europe & Rest of World (excl. China)');
+  $('customerStandard').disabled=(region!=='Other local/3rd party/customer');
+
+  // Show UP note only for Global Online Baseline and Customer Specified paths
+  // (Europe/RoW without Amazon, China non-LUM, Other local/3rd party)
+  // NOT for NA (Amazon default) and NOT for China LUM Online Testing
+  var showUpNote = (dp==='Global Online Baseline' || dp==='Customer Specified 客户指定标准');
+  $('upNote').style.display = showUpNote ? 'block' : 'none';
+
+  // Step 2
+  const dims=[L,W,H].sort((a,b)=>b-a);
+  const Ld=dims[0],Md=dims[1],Sd=dims[2];
+  const Li=Ld/25.4, Mi=Md/25.4, Si=Sd/25.4;
+  const uwLb=wt*2.20462262, dwLb=(Li*Mi*Si)/DIV;
+  const cw=Math.max(uwLb,dwLb), bw=Math.ceil(cw/RND)*RND;
+  $('sortedMm').textContent=Ld+' / '+Md+' / '+Sd;
+  $('sortedIn').textContent=Li.toFixed(2)+' / '+Mi.toFixed(2)+' / '+Si.toFixed(2);
+  $('unitWtLb').textContent=uwLb.toFixed(2)+' lb';
+  $('dimWtLb').textContent=dwLb.toFixed(2)+' lb';
+  $('billWt').textContent=bw.toFixed(1)+' lb';
+
+  // SIPP Classification per SIPP Guidelines v11.2
+  // Girth = Length + 2*Height + 2*Width (in inches)
+  var girth = Li + 2*Si + 2*Mi;
+  $('girthVal').textContent=girth.toFixed(1)+' in';
+  var isTooSmall = (Li<6||Mi<4||Si<0.375);
+  var isHeavyBulky = (uwLb>50 || girth>130 || Li>=59 || Mi>=33 || Si>=33);
+  var isSortable = (!isTooSmall && !isHeavyBulky && Li<=18 && Mi<=14 && Si<=8 && uwLb<=20);
+  var isNonSortable = (!isTooSmall && !isHeavyBulky && !isSortable);
+
+  let dt;
+  if(isTooSmall) dt='Too Small (Amazon Overbox)';
+  else if(isHeavyBulky) dt='Heavy/Bulky';
+  else if(isSortable) dt='Sortable (≤18×14×8in, ≤20lb)';
+  else dt='Non-Sortable';
+  $('dimTierBadge').textContent=dt; $('dimTierBadge').className='badge badge-'+(isTooSmall?'red':isHeavyBulky?'amber':'blue');
+
+  let wTier;
+  if(uwLb<=20) wTier='≤20 lb (Sortable range)';
+  else if(uwLb<=50) wTier='20-50 lb (Non-Sortable)';
+  else wTier='>50 lb (Heavy/Bulky)';
+
+  // Step 3
+  const hasExcl=excl.some(v=>v==='Yes');
+  let exclResult;
+  if(!isAmz) exclResult='N/A (非Amazon路径)';
+  else exclResult=hasExcl?'EXCLUDED 含排除项':'PASSED 通过';
+
+  const exclDisabled=!isAmz;
+  ['lithiumBattery','pinFlap','windowCut','cylindrical','lShaped','hazardous'].forEach(id=>{$(id).disabled=exclDisabled});
+  $('sec3').style.display=isAmz?'block':'none';
+  $('exclusionHint').textContent=isAmz?'← Amazon SIPP Path 需要填写排除项':'← 非Amazon路径, 此部分无需填写';
+  $('exclusionResult').textContent=exclResult;
+
+  // Step 4: SIPP Eligibility
+  // Per SIPP v11.2: Too Small → Overbox; Excluded → not eligible; Heavy/Bulky → SIPP Type B-F; Sortable/Non-Sortable → SIPP Type A
+  var minOk=!isTooSmall;
+  var wtOk=true; // weight check integrated into Heavy/Bulky detection
+  let sipp;
+  if(!isAmz) sipp='N/A';
+  else if(exclResult==='EXCLUDED 含排除项') sipp='NOT ELIGIBLE 不合格';
+  else if(isTooSmall) sipp='NOT ELIGIBLE 不合格';
+  else sipp='ELIGIBLE 合格'; // Sortable, Non-Sortable, AND Heavy/Bulky are all SIPP eligible
+
+  let reason='';
+  if(sipp==='NOT ELIGIBLE 不合格'){
+    if(exclResult==='EXCLUDED 含排除项') reason='Excluded item (排除项)';
+    else if(isTooSmall) reason='Too Small for SIPP (尺寸过小 < 6×4×0.375 in)';
+    else reason='Other';
+  }
+
+  // Chargeback: per SIPP v11.2, Sortable products do NOT get chargeback; only Non-Sortable and Heavy/Bulky
+  let cbApplies;
+  if(!isAmz) cbApplies='N/A';
+  else if(sipp!=='ELIGIBLE 合格') cbApplies='N/A (不符合SIPP)';
+  else if(isSortable) cbApplies='No (Sortable - no chargeback per SIPP guidelines)';
+  else cbApplies='Yes (Non-Sortable / Heavy/Bulky)';
+
+  var hasChargeback = (sipp==='ELIGIBLE 合格' && !isSortable);
+  const cbFee=hasChargeback?lookupCB(bw):0;
+
+  $('dimTierVal').textContent=dt;
+  $('weightTierVal').textContent=wTier;
+  $('minSizeVal').textContent=minOk?'✓ Yes':'✗ No'; $('minSizeVal').className='badge badge-'+(minOk?'green':'red');
+  $('weightOkVal').textContent=wtOk?'✓ Yes':'✗ No'; $('weightOkVal').className='badge badge-'+(wtOk?'green':'red');
+
+  const sb=$('sippBox');
+  sb.className='sipp-box '+(sipp==='ELIGIBLE 合格'?'eligible':sipp==='NOT ELIGIBLE 不合格'?'not-eligible':'na');
+  $('sippBadge').textContent=sipp; $('sippBadge').className='badge badge-'+(sipp==='ELIGIBLE 合格'?'green':sipp==='NOT ELIGIBLE 不合格'?'red':'gray');
+  $('sippReason').textContent=reason?'原因: '+reason:'';
+  $('cbApplies').textContent=cbApplies;
+  $('cbFeeSpan').textContent=cbFee>0?'Fee: $'+cbFee.toFixed(2)+'/unit':'';
+
+  // ─── FBA Fee Lookup by dimensions + billable weight (2026 US non-peak, $10-$50 price) ───
+  function lookupFbaFee(longest, median, shortest, unitWtLb, billWt){
+    if(longest<=15&&median<=12&&shortest<=0.75&&unitWtLb<=1){
+      if(billWt<=0.25) return 3.31; if(billWt<=0.5) return 3.41;
+      if(billWt<=0.75) return 3.69; return 3.97;
+    } else if(longest<=18&&median<=14&&shortest<=8&&unitWtLb<=20){
+      if(billWt<=0.25) return 3.71; if(billWt<=0.5) return 3.84;
+      if(billWt<=0.75) return 4.01; if(billWt<=1) return 4.19;
+      if(billWt<=1.5) return 4.78; if(billWt<=2) return 5.08;
+      if(billWt<=2.5) return 5.30; if(billWt<=3) return 5.71;
+      if(billWt<=4) return 6.05; if(billWt<=5) return 6.39;
+      if(billWt<=6) return 6.75; if(billWt<=7) return 7.01;
+      if(billWt<=8) return 7.17; if(billWt<=9) return 7.37;
+      if(billWt<=10) return 7.52; if(billWt<=11) return 7.68;
+      if(billWt<=12) return 7.85; if(billWt<=13) return 8.00;
+      if(billWt<=14) return 8.14; if(billWt<=15) return 8.32;
+      if(billWt<=16) return 8.50; if(billWt<=17) return 8.70;
+      if(billWt<=18) return 8.90; if(billWt<=19) return 9.10;
+      return 9.30;
+    } else if(longest<=37&&median<=28&&shortest<=20&&unitWtLb<=50){
+      if(billWt<=2) return 7.55; if(billWt<=5) return 8.20;
+      if(billWt<=10) return 9.40; if(billWt<=20) return 11.20;
+      if(billWt<=30) return 14.10; return 14.10+0.42*Math.ceil(billWt-30);
+    } else if(longest<=59&&median<=33&&shortest<=33&&unitWtLb<=50){
+      if(billWt<=5) return 9.80; if(billWt<=10) return 12.50;
+      if(billWt<=20) return 16.00; if(billWt<=30) return 19.50;
+      if(billWt<=40) return 22.50; return 24.50;
+    } else {
+      if(billWt<=50) return 26.33; if(billWt<=70) return 33.55;
+      if(billWt<=150) return 46.80; return 46.80+0.42*Math.ceil(billWt-150);
+    }
+  }
+
+  // ─── Overbox Impact Estimation ───
+  var origTier = getSizeTierFromDims(Li, Mi, Si, uwLb);
+  var obBox = findOverbox(Li, Mi, Si);
+  var obTier = getSizeTierFromDims(obBox.l, obBox.w, obBox.h, uwLb+0.5); // +0.5lb for box weight
+  var origIsSortable = isSortableDims(Li, Mi, Si, uwLb);
+  var obIsSortable = isSortableDims(obBox.l, obBox.w, obBox.h, uwLb+0.5);
+  var tierJumped = origIsSortable && !obIsSortable; // Sortable → Non-Sortable due to overbox
+  
+  // Calculate overbox billable weight for chargeback lookup
+  var obDimWt = (obBox.l * obBox.w * obBox.h) / DIV;
+  var obUnitWt = uwLb + 0.5; // estimate box + packing weight
+  var obBillWt = Math.ceil(Math.max(obDimWt, obUnitWt) / RND) * RND;
+  
+  // If originally Non-Sortable, chargeback uses PRODUCT's own billable weight (not overbox)
+  // If Sortable→Non-Sortable due to overbox: NO chargeback (Amazon doesn't penalize vendor for overbox they add)
+  var obCbFee = 0;
+  if(hasChargeback) obCbFee = cbFee; // product's own chargeback, same as line 909
+  
+  // Accurate FBA fee difference using weight-based lookup
+  var origFbaEst = lookupFbaFee(Li, Mi, Si, uwLb, bw);
+  var obFbaEst = lookupFbaFee(obBox.l, obBox.w, obBox.h, obUnitWt, obBillWt);
+  var fbaJumpCost = Math.max(obFbaEst - origFbaEst, 0);
+  
+  // Prep fee estimate (bubble wrap for lighting products)
+  var prepFeeEst = 1.00; // ~$1/unit average for bubble wrap
+  
+  // Total annual "not doing SIPP" cost
+  var obAnnCB = obCbFee * af;
+  var obAnnJump = fbaJumpCost * af;
+  var obAnnPrep = prepFeeEst * af;
+  var obTotalAnn = obAnnCB + obAnnJump + obAnnPrep;
+  
+  // Populate overbox estimator UI
+  var showOverbox = isAmz && sipp==='ELIGIBLE 合格' && !isHeavyBulky;
+  $('overboxSection').style.display = showOverbox ? 'block' : 'none';
+  if(showOverbox){
+    $('ob_origSize').textContent = Li.toFixed(1)+'×'+Mi.toFixed(1)+'×'+Si.toFixed(1)+' in';
+    $('ob_origTier').textContent = origTier;
+    $('ob_newSize').textContent = obBox.l.toFixed(1)+'×'+obBox.w.toFixed(1)+'×'+obBox.h.toFixed(1)+' in';
+    $('ob_newTier').textContent = obTier;
+    $('ob_boxCode').textContent = obBox.name;
+    $('ob_tierJump').textContent = tierJumped ? '⚠️ YES — FBA费率跳档! FBA fee tier jump!' : '✅ No';
+    $('ob_tierJump').style.color = tierJumped ? '#991b1b' : '#166534';
+    $('ob_annCB').textContent = obCbFee>0 ? '$'+obCbFee.toFixed(2)+'/unit × '+af+' = $'+obAnnCB.toFixed(0)+'/year' : '$0 (Sortable产品无罚款 No chargeback for Sortable)';
+    $('ob_annJump').textContent = fbaJumpCost>0 ? '$'+fbaJumpCost.toFixed(2)+'/unit × '+af+' = $'+obAnnJump.toFixed(0)+'/year' : '$0 (无跳档)';
+    $('ob_annPrep').textContent = '$'+prepFeeEst.toFixed(2)+'/unit × '+af+' = $'+obAnnPrep.toFixed(0)+'/year';
+    $('ob_totalAnn').textContent = '$'+obTotalAnn.toFixed(0)+'/year';
+  }
+
+  // Step 6 cost calc — use total overbox cost + lost SIPP discount for comparison
+  const impPct=(il==='Custom')?(num('customImpPct')/100):(IMP[il]||0.1);
+  const upCost=pc*(1+impPct), incCost=upCost-pc;
+  const annUp=incCost*tf+(tc>0?tc/ay:0);
+
+  // Early SIPP discount lookup (needed for accurate cost comparison)
+  // This mirrors the FBA section logic but only extracts the discount amount
+  var earlySippDisc = 0;
+  if(Li<=15&&Mi<=12&&Si<=0.75&&uwLb<=1){
+    if(bw<=0.25) earlySippDisc=0.04; else if(bw<=0.5) earlySippDisc=0.04;
+    else if(bw<=0.75) earlySippDisc=0.06; else earlySippDisc=0.08;
+  } else if(Li<=18&&Mi<=14&&Si<=8&&uwLb<=20){
+    if(bw<=0.25) earlySippDisc=0.04; else if(bw<=0.5) earlySippDisc=0.04;
+    else if(bw<=0.75) earlySippDisc=0.06; else if(bw<=1) earlySippDisc=0.08;
+    else if(bw<=1.5) earlySippDisc=0.10; else if(bw<=2) earlySippDisc=0.10;
+    else if(bw<=2.5) earlySippDisc=0.12; else if(bw<=3) earlySippDisc=0.12;
+    else if(bw<=4) earlySippDisc=0.15; else if(bw<=5) earlySippDisc=0.15;
+    else if(bw<=6) earlySippDisc=0.18; else if(bw<=7) earlySippDisc=0.18;
+    else if(bw<=14) earlySippDisc=0.20; else if(bw<=19) earlySippDisc=0.22;
+    else earlySippDisc=0.23;
+  }
+  // Bulky/XL: no SIPP discount in 2026
+
+  // Total annual "not doing SIPP" cost = overbox costs + lost SIPP discount
+  var annLostDisc = earlySippDisc * af;
+  var annNoSippTotal = obTotalAnn + annLostDisc; // Full cost of not doing SIPP
+
+  // For cost comparison, use total no-SIPP cost (overbox + lost discount)
+  const annCB=annNoSippTotal;
+  let costDec;
+  if(sipp!=='ELIGIBLE 合格') costDec='NOT ELIGIBLE';
+  else if(isSortable && !tierJumped) {
+    // Sortable no jump: compare (prep fee + within-tier FBA diff + lost SIPP discount)
+    if(annNoSippTotal > 0 && annUp <= annNoSippTotal) costDec='✅ 建议升级SIPP UPGRADE — Sortable但升级更经济(Prep+FBA费差+SIPP折扣) / Sortable, upgrade is more cost-effective';
+    else costDec='✅ 维持现有包装 KEEP CURRENT — Sortable无罚款无跳档 / No chargeback, no tier jump';
+  }
+  else if(isSortable && tierJumped) {
+    // Sortable but overbox pushes to Non-Sortable — needs cost comparison!
+    if(annUp<=annCB) costDec='UPGRADE (SIPP/ISTA6-A) — Overbox会导致变Non-Sortable / Overbox pushes to Non-Sortable';
+    else costDec='KEEP baseline + accept overbox costs';
+  }
+  else if(annUp<=annCB) costDec='升级SIPP UPGRADE (SIPP/ISTA6-A)';
+  else costDec='维持现状 KEEP baseline + 支付罚款 pay chargeback';
+
+  var obPerUnit = obCbFee + fbaJumpCost + prepFeeEst + earlySippDisc; // total per-unit cost of not doing SIPP (incl lost discount)
+  const beShare=(sipp==='ELIGIBLE 合格'&&obPerUnit>0)?incCost/Math.max(obPerUnit,0.000001):null;
+  const actShare=tf>0?af/tf:0;
+
+  const isNA=region==='North America (US/CA)';
+  // Show old cost card for: Heavy/Bulky with chargeback (not covered by new visual comparison card)
+  const showCost=!isNA&&isAmz&&sipp==='ELIGIBLE 合格'&&(hasChargeback || tierJumped);
+  // Show new visual cost comparison card for: all SIPP-eligible non-NA non-HeavyBulky Amazon products
+  var showCompare = !isNA && isAmz && sipp==='ELIGIBLE 合格' && !isHeavyBulky;
+
+  // Step 6: hide when not Amazon; when Amazon, always allow editing (needed for FBA calc)
+  // Only mute the cost-comparison decision for NA (since NA always does SIPP), but inputs stay editable
+  $('sec6').style.display=isAmz?'block':'none';
+  if(isAmz){
+    // All inputs always editable when Amazon path
+    ['packCost','totalForecast','amazonSharePct','improvementLevel','customImpPct','testCertCost','amortYears'].forEach(id=>{$(id).disabled=false});
+    $('sec6').className='section';
+  }
+
+  // China Online flag
+  var chinaOnline=(region==='China Online');
+
+  // Step 4: hide entirely for China Online (not relevant); show for Amazon paths; mute for other non-Amazon
+  if(chinaOnline){
+    $('sec4').style.display='none';
+  } else {
+    $('sec4').style.display='block';
+    $('sippBox').style.display=isAmz?'block':'none';
+  }
+
+  // Step 5: disable fragility when China Online (doesn't affect results)
+  $('fragility').disabled=chinaOnline;
+  $('sec5').className='section'+(chinaOnline?' muted':'');
+
+  // Hide Step 7 FBA estimator when not Amazon
+  $('sec7').style.display=isAmz?'block':'none';
+
+  let ch;
+  if(isNA) ch='← NA默认走SIPP, 成本输入用于FBA费用估算';
+  else if(showCost) ch='← 需要填写成本输入 (用于SIPP成本对比 + FBA费用估算)';
+  else if(isAmz && isSortable && !tierJumped) ch='← Sortable产品: 成本输入用于对比升级包装 vs Prep Fee+FBA费差 / Sortable: cost inputs for upgrade vs prep+FBA diff comparison';
+  else if(isAmz && sipp!=='ELIGIBLE 合格') ch='← 不符合SIPP, 成本输入用于FBA费用估算 / Not SIPP eligible';
+  else if(isAmz) ch='← 成本输入用于FBA费用估算';
+  else ch='← 非Amazon路径';
+  $('costHint').textContent=ch;
+
+  // Output
+  const isFr=frag.startsWith('Fragile');
+  let pkgRoute,testStd,testMethod,minSamp,testProc,decBasis;
+
+  if(!isAmz){
+    if(dp==='China LUM Online Testing'){
+      pkgRoute='UP 单品包装\nUP packaging';
+      testStd='中国LED灯具在线测试 (ISTA 6 FedEx + ISTA 6 Amazon)\nChina LUM Online Testing';
+      testMethod='内部试验 — ISTA 6 FedEx + ISTA 6 Amazon\nInternal';
+      minSamp='3 套 / 3 sets';
+      testProc='ISTA 6 FedEx + ISTA 6 Amazon';
+      decBasis='中国在线测试标准 / China online test standard';
+    } else if(dp==='Customer Specified 客户指定标准'){
+      pkgRoute='按客户要求\nPer customer requirement';
+      testStd='按客户指定标准\nPer customer standard';
+      testMethod='按客户要求\nPer customer requirement';
+      minSamp='按客户要求 / Per requirement';
+      testProc='Per customer requirement';
+      decBasis='按客户要求 / Per customer requirement';
+    } else {
+      pkgRoute='UP 单品包装 (add OB if fragile)\nUP packaging (add overbox if fragile/required)';
+      testStd='ISTA 3-Lite Test II (全球在线基线标准)\nISTA 3-Lite Test II (Global Online Baseline)';
+      testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
+      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+      decBasis='全球在线基线标准 / Global Online Baseline (ISTA 3-Lite)';
+    }
+  } else if(sipp!=='ELIGIBLE 合格'){
+    // Not eligible: Excluded or Too Small
+    if(exclResult==='EXCLUDED 含排除项'){
+      pkgRoute='Amazon标准履约包装 (SIPP排除项, 无法认证SIOC)\nAmazon standard fulfillment (Excluded from SIPP, cannot certify SIOC)';
+      testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
+      testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
+      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+      decBasis='SIPP排除项 → FBA按产品尺寸计费, 仅损失SIPP折扣 / Excluded → FBA by product dims, only loses SIPP discount';
+    } else {
+      // Too Small → Amazon Overbox, internal baseline test only
+      pkgRoute='Amazon加外箱 (尺寸过小, 不符合SIPP)\nAmazon Overboxing (Too Small, not SIPP eligible)';
+      testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
+      testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
+      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+      decBasis='尺寸过小不符合SIPP → ISTA 3-Lite 内部基线 / Too Small → internal ISTA 3-Lite baseline';
+    }
+  } else if(isHeavyBulky){
+    // Heavy/Bulky: SIPP eligible but uses Type B-F
+    pkgRoute='SIPP 大件/超重 — SIOC 自有容器发运\nSIPP Heavy/Bulky — Ship in Own Container (SIOC)';
+    testStd='ISTA 6-Amazon.com (SIOC) Type B - Type F\nISTA 6A B-F型 (大件/超重SIOC标准)';
+    testMethod=isFr?'第三方认证实验室 Certified Lab (ISTA 6A Type B-F)':'自测或第三方认证实验室 Self-test or Certified Lab (ISTA 6A Type B-F)';
+    minSamp=isFr?'5 套 (易碎) / 5 sets (Fragile)':'1 套 (非易碎) / 1 set (Non-Fragile)';
+    testProc='按 ISTA 6-Amazon SIOC Type B-F 要求执行 / Per ISTA 6-Amazon SIOC Type B-F requirement';
+    decBasis='大件/超重 Heavy/Bulky (>50lb 或 Girth>130" 或 side≥59/33/33) → SIPP Type B-F';
+  } else {
+    if(isNA){
+      pkgRoute=isFr?'重新设计SIPP包装 (易碎)\nRedesign to SIPP-ready (fragile)':'SIPP已就绪 — Self-Drop Test 或 ISTA 6A Type A\nSIPP Ready — Self-Drop Test or ISTA 6A Type A';
+      testStd=isFr?'ISTA 6-Amazon.com SIOC Type A (仅限第三方认证实验室)\nISTA 6A Type A — Certified Lab ONLY':'Amazon自测跌落 或 ISTA 6A Type A\nAmazon Rigid Self-Drop Test or ISTA 6-Amazon.com SIOC Type A';
+      testMethod=isFr?'第三方认证实验室 (仅限)\nCertified Lab ONLY':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
+      minSamp=isFr?'5 套 / 5 sets':'1 套 / 1 set';
+      testProc='按 ISTA 6-Amazon / Amazon Self-Drop 要求执行\nPer ISTA 6-Amazon / Amazon Self-Drop requirement';
+      decBasis=isFr?'NA+SIPP+易碎→第三方Lab ISTA 6A, 5套 / NA+SIPP+Fragile→Certified Lab ISTA 6A, 5 sets':'NA+SIPP+非易碎→Self-Drop或6A, 1套 / NA+SIPP+Non-fragile→Self-Drop or 6A, 1 set';
+    } else {
+      if(isSortable && !tierJumped){
+        if(costDec.indexOf('UPGRADE')>=0){
+          // Sortable no-jump but upgrade is more cost-effective
+          pkgRoute='✅ 建议升级SIPP (Sortable, 升级更经济)\nRecommend SIPP upgrade (Sortable, upgrade is more cost-effective)';
+          testStd=isFr?'ISTA 6-Amazon.com SIOC Type A (第三方认证实验室)\nISTA 6A Type A — Certified Lab':'Amazon Self-Drop Test 或 ISTA 6A Type A\nAmazon Self-Drop Test or ISTA 6-Amazon.com SIOC Type A';
+          testMethod=isFr?'第三方认证实验室\nCertified Lab':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
+          minSamp=isFr?'5 套 / 5 sets':'1 套 / 1 set';
+          testProc=isFr?'Per ISTA 6A requirement':'Self-Drop or ISTA 6A';
+          decBasis='Sortable无罚款无跳档, 但升级包装更经济(避免Prep Fee+同档FBA费差)\nSortable, no chargeback/tier jump, but SIPP upgrade saves more than packaging cost increase';
+        } else {
+          // Sortable no-jump, keep current
+          pkgRoute='✅ 维持现有包装即可 (Sortable, 无罚款, Overbox不跳档)\nKeep current packaging (Sortable, no chargeback, no tier jump)';
+          testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
+          testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
+          minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+          testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+          decBasis='Sortable产品无罚款风险, Overbox后仍为Sortable不跳档\nSortable — no chargeback, overbox stays Sortable\n(可选: 如申请SIPP可获得少量FBA折扣$0.04-$0.23/unit · Optional: SIPP provides small FBA discount only)';
+        }
+      } else if(isSortable && tierJumped){
+        // Sortable but overbox pushes to Non-Sortable — treat like Non-Sortable for cost comparison
+        if(costDec.indexOf('UPGRADE')>=0){
+          pkgRoute=isFr?'⚠️ 建议升级SIPP (Overbox会导致变Non-Sortable)\nRecommend SIPP upgrade — Redesign to SIPP-ready (fragile)':'⚠️ 建议升级SIPP (Overbox会导致变Non-Sortable)\nRecommend SIPP upgrade — Redesign to SIPP-ready (non-fragile)';
+          testStd=isFr?'ISTA 6-Amazon.com SIOC Type A (仅限第三方认证实验室)\nISTA 6A Type A — Certified Lab ONLY':'Amazon自测跌落 或 ISTA 6A Type A\nAmazon Rigid Self-Drop Test or ISTA 6-Amazon.com SIOC Type A';
+          testMethod=isFr?'第三方认证实验室 (仅限)\nCertified Lab ONLY':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
+          minSamp=isFr?'5 套 / 5 sets':'1 套 / 1 set';
+          testProc='按 ISTA 6-Amazon / Amazon Self-Drop 要求执行\nPer ISTA 6-Amazon / Amazon Self-Drop requirement';
+          decBasis='Sortable但Overbox后变Non-Sortable → 建议升级SIPP\nSortable but Overbox pushes to Non-Sortable → Recommend SIPP upgrade';
+        } else {
+          pkgRoute='维持现有包装 (接受Overbox额外成本)\nKeep current packaging + accept overbox costs';
+          testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
+          testMethod='内部试验 — Drop + Vibration (维持包装)\nInternal — Drop + Vibration (keep current packaging)';
+          minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+          testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+          decBasis='Sortable但Overbox后变Non-Sortable, 接受额外成本\nSortable but Overbox → Non-Sortable, accept overbox costs';
+        }
+      } else if(costDec.indexOf('KEEP')>=0){
+        pkgRoute='维持现有包装+Amazon Repack (接受罚款+Overbox成本)\nKeep current packaging + Amazon Repack (accept chargeback + overbox costs)';
+        testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
+        testMethod='内部试验 — Drop + Vibration (维持包装)\nInternal — Drop + Vibration (keep current packaging)';
+        minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+        testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
+        decBasis='维持包装+接受全部额外成本 / Keep packaging + pay all extra costs';
+      } else {
+        pkgRoute=isFr?'重新设计SIPP包装 (易碎)\nRedesign to SIPP-ready (fragile)':'重新设计SIPP包装 (非易碎)\nRedesign to SIPP-ready (non-fragile)';
+        testStd=isFr?'ISTA 6-Amazon.com SIOC Type A (仅限第三方认证实验室)\nISTA 6A Type A — Certified Lab ONLY':'Amazon自测跌落 或 ISTA 6A Type A\nAmazon Rigid Self-Drop Test or ISTA 6-Amazon.com SIOC Type A';
+        testMethod=isFr?'第三方认证实验室 (仅限)\nCertified Lab ONLY':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
+        minSamp=isFr?'5 套 / 5 sets':'1 套 / 1 set';
+        testProc='Per ISTA 6-Amazon / Amazon Self-Drop requirement';
+        decBasis=isFr?'升级SIPP+易碎→第三方Lab, 5套 / UPGRADE+Fragile→Certified Lab, 5 sets':'升级SIPP+非易碎→Self-Drop或6A, 1套 / UPGRADE+Non-fragile→Self-Drop or 6A, 1 set';
+      }
+    }
+  }
+
+  let costDisp;
+  if(isNA) costDisp='N/A — NA直接走SIPP测试,无需成本对比 / NA always SIPP, no cost comparison needed';
+  else if(!isAmz) costDisp='N/A — 非Amazon渠道,无SIPP路径 / Non-Amazon channel, no SIPP path';
+  else if(sipp!=='ELIGIBLE 合格') costDisp='N/A — 不符合SIPP / Not SIPP eligible';
+  else costDisp=costDec;
+
+  // Header
+  $('hdr-path').textContent=dp;
+
+  // Update result panel using textContent (Teams compatible)
+  $('r_dp').textContent=dp;
+  $('r_pkg').textContent=pkgRoute;
+  $('r_std').textContent=testStd;
+  $('r_method').textContent=testMethod;
+  $('r_samp').textContent=minSamp;
+  $('r_proc').textContent=testProc;
+  $('r_basis').textContent=decBasis;
+  let docsHtml = "";
+
+// Online Packaging Guideline
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_Online_Packaging_Test_Guideline_20260316_updated.docx?d=wbb4c45127a8640da930f6ddcce42269c&csf=1&web=1&e=aaX9ON"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     Consumer Packaging Online Test Guideline
+  </a>
+</div>`;
+
+// ISTA 3-Lite
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:b:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Current%20test%20standards/Consumer/ISTA%203%20Lite%20-%20rev%201.2_06-01-2023%202.pdf?csf=1&web=1&e=rPg6o1"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     ISTA 3-Lite Standard
+  </a>
+</div>`;
+
+// ISTA 6A
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:b:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Current%20test%20standards/Consumer/ISTA%20Project%206-Amazoncom-SIOC%20(5%2016-5%2016).pdf?csf=1&web=1&e=oL3BR2"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     ISTA 6A Standard
+  </a>
+</div>`;
+
+// LED Luminaire China Online
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:b:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Current%20test%20standards/Consumer/Signify%20LED%20Luminaire%20online%20packaging%20test.pdf?csf=1&web=1&e=RjF7sr"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     LED Luminaire China Online Test
+  </a>
+</div>`;
+
+$('r_docs').innerHTML = docsHtml;
+
+  // ─── Build Flowchart ───
+  buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNA,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth);
+
+  if(showCompare){
+    $('costCard').style.display='none';
+    $('naCost').style.display='none';
+  } else if(showCost){
+    $('costCard').style.display='block';
+    $('naCost').style.display='none';
+    $('r_imp').textContent=(impPct*100).toFixed(0)+'%';
+    $('r_upc').textContent='$'+upCost.toFixed(2);
+    $('r_inc').textContent='$'+incCost.toFixed(2);
+    $('r_auc').textContent='$'+annUp.toFixed(2);
+    $('r_acb').textContent='$'+annCB.toFixed(2);
+    var isUpgrade=costDec.indexOf('UPGRADE')>=0;
+    var db=$('decisionBox');
+    db.className='decision-box '+(isUpgrade?'upgrade':'keep');
+    $('r_cdBadge').textContent=costDec;
+    $('r_cdBadge').className='badge badge-'+(isUpgrade?'green':'amber');
+    $('r_be').textContent=beShare!==null?(beShare*100).toFixed(1)+'%':'-';
+    $('r_as').textContent=(actShare*100).toFixed(1)+'%';
+  } else if(isAmz) {
+    $('costCard').style.display='none';
+    $('naCost').style.display='block';
+    $('r_naText').textContent='成本决策 Cost Decision: '+costDisp;
+  } else {
+    $('costCard').style.display='none';
+    $('naCost').style.display='none';
+  }
+
+  // ─── New Visual Cost Comparison Card ───
+  $('costCompareCard').style.display = showCompare ? 'block' : 'none';
+  if(showCompare){
+    var annPackInc = incCost * tf;
+    var annTestAmort = tc > 0 ? tc / ay : 0;
+
+    // Left side: Upgrade
+    $('cc_impPct').textContent = (impPct*100).toFixed(0)+'% ($'+pc.toFixed(2)+' → $'+upCost.toFixed(2)+')';
+    $('cc_inc').textContent = '$'+incCost.toFixed(2)+'/pc';
+    $('cc_annPack').textContent = '$'+incCost.toFixed(2)+' × '+tf+' = $'+annPackInc.toFixed(0);
+    $('cc_testCost').textContent = tc>0 ? '$'+tc.toFixed(0)+' ÷ '+ay+'yr = $'+annTestAmort.toFixed(0)+'/yr' : '$0 (Self-Drop自测)';
+    $('cc_totalUp').textContent = '$'+annUp.toFixed(0)+'/year';
+
+    // Right side: No SIPP (including lost SIPP discount)
+    $('cc_cb').textContent = obCbFee>0 ? '$'+obCbFee.toFixed(2)+'/unit' : '$0 (Sortable无罚款)';
+    $('cc_jump').textContent = fbaJumpCost>0 ? '$'+fbaJumpCost.toFixed(2)+'/unit' : '$0 (无跳档 no jump)';
+    $('cc_prep').textContent = '$'+prepFeeEst.toFixed(2)+'/unit';
+    $('cc_lostDisc').textContent = earlySippDisc>0 ? '$'+earlySippDisc.toFixed(2)+'/unit (做SIPP可获 if SIPP enrolled)' : '$0';
+    $('cc_units').textContent = af+' units/year';
+    $('cc_totalKeep').textContent = '$'+annNoSippTotal.toFixed(0)+'/year';
+
+    // Verdict (use annNoSippTotal which includes lost SIPP discount)
+    var vd = $('cc_verdict');
+    var vt = $('cc_verdictText');
+    var vs = $('cc_verdictSub');
+    var diff = annUp - annNoSippTotal;
+
+    if(isSortable && !tierJumped){
+      // Sortable no jump: compare costs (prep fee + within-tier FBA diff + lost SIPP discount)
+      var noSippNote = 'Sortable: 无Chargeback无跳档'+(fbaJumpCost>0?', 额外成本来自Prep Fee+同档FBA费差+损失折扣':' 额外成本来自Prep Fee+损失折扣')+' / No chargeback, no tier jump.';
+      if(annNoSippTotal > 0 && annUp <= annNoSippTotal){
+        vd.style.background = 'rgba(5,150,105,0.2)';
+        vd.style.border = '1.5px solid rgba(5,150,105,0.4)';
+        vt.style.color = '#86efac';
+        vt.textContent = '✅ 建议升级SIPP RECOMMEND UPGRADE — 年省 Save $'+(annNoSippTotal-annUp).toFixed(0)+'/year';
+        vs.textContent = noSippNote+' 升级包装更经济 / Upgrade is more cost-effective.';
+      } else if(annNoSippTotal > 200) {
+        vd.style.background = 'rgba(245,158,11,0.15)';
+        vd.style.border = '1.5px solid rgba(245,158,11,0.35)';
+        vt.style.color = '#fde68a';
+        vt.textContent = '⚠️ 维持包装但关注成本 KEEP but monitor — 不做SIPP仍有$'+annNoSippTotal.toFixed(0)+'/yr额外成本';
+        vs.textContent = noSippNote+' 升级成本($'+annUp.toFixed(0)+') > 不做SIPP成本($'+annNoSippTotal.toFixed(0)+'), 暂不建议 · 可降低改善成本后重新评估';
+      } else {
+        vd.style.background = 'rgba(37,99,235,0.2)';
+        vd.style.border = '1.5px solid rgba(37,99,235,0.4)';
+        vt.style.color = '#93c5fd';
+        vt.textContent = '✅ 维持现有包装 KEEP CURRENT PACKAGING';
+        vs.textContent = noSippNote+' 额外成本很低($'+annNoSippTotal.toFixed(0)+'/yr), SIPP可选 / Extra cost minimal, SIPP optional.';
+      }
+    } else if(annUp <= annNoSippTotal){
+      // Upgrade is cheaper
+      vd.style.background = 'rgba(5,150,105,0.2)';
+      vd.style.border = '1.5px solid rgba(5,150,105,0.4)';
+      vt.style.color = '#86efac';
+      vt.textContent = '✅ 建议升级SIPP RECOMMEND UPGRADE — 年省 Save $'+(annNoSippTotal-annUp).toFixed(0)+'/year';
+      vs.textContent = '升级包装成本 < 不做SIPP的额外成本(含损失折扣) · Upgrade cost < No-SIPP extra cost · 盈亏平衡占比 Break-even: '+(beShare!==null?(beShare*100).toFixed(1)+'%':'-')+' · 实际Amazon占比 Actual: '+(actShare*100).toFixed(1)+'%';
+    } else {
+      // Keep is cheaper
+      vd.style.background = 'rgba(220,38,38,0.15)';
+      vd.style.border = '1.5px solid rgba(220,38,38,0.35)';
+      vt.style.color = '#fca5a5';
+      vt.textContent = '❌ 暂不建议升级 NOT RECOMMENDED — 升级成本高出 Higher by $'+(annUp-annNoSippTotal).toFixed(0)+'/year';
+      vs.textContent = '升级包装成本 > 不做SIPP的额外成本(含损失折扣) · Upgrade cost > No-SIPP extra cost · 可考虑提高Amazon占比或降低包装改善成本后重新评估';
+    }
+  }
+
+  // ─── STEP 7: FBA Cost Estimator ───
+  var sp=num('sellPrice'), refPct=num('referralPct')/100;
+
+  // FBA Size Tier classification (different from SIPP!)
+  // FBA 2026 thresholds (inches, lb):
+  //   Small Standard: longest≤15, median≤12, shortest≤0.75, weight≤1 lb
+  //   Large Standard: longest≤18, median≤14, shortest≤8, weight≤20 lb
+  //   Small Bulky: longest≤37, median≤28, shortest≤20, weight≤50 lb (NEW 2026)
+  //   Large Bulky: longest≤59, median≤33, shortest≤33, weight≤50 lb
+  //   Extra-Large: exceeds Large Bulky dimensions or >50 lb
+  var fbaFee=0, sippDisc=0, fbaTier='';
+  var fbaShipWt=bw; // billable shipping weight
+
+  if(Li<=15&&Mi<=12&&Si<=0.75&&uwLb<=1){
+    fbaTier='Small Standard';
+    if(fbaShipWt<=0.25){fbaFee=3.31;sippDisc=0.04;}
+    else if(fbaShipWt<=0.5){fbaFee=3.41;sippDisc=0.04;}
+    else if(fbaShipWt<=0.75){fbaFee=3.69;sippDisc=0.06;}
+    else{fbaFee=3.97;sippDisc=0.08;}
+    if(sp>50) fbaFee+=0.51;
+  } else if(Li<=18&&Mi<=14&&Si<=8&&uwLb<=20){
+    fbaTier='Large Standard';
+    if(fbaShipWt<=0.25){fbaFee=3.71;sippDisc=0.04;}
+    else if(fbaShipWt<=0.5){fbaFee=3.84;sippDisc=0.04;}
+    else if(fbaShipWt<=0.75){fbaFee=4.01;sippDisc=0.06;}
+    else if(fbaShipWt<=1){fbaFee=4.19;sippDisc=0.08;}
+    else if(fbaShipWt<=1.5){fbaFee=4.78;sippDisc=0.10;}
+    else if(fbaShipWt<=2){fbaFee=5.08;sippDisc=0.10;}
+    else if(fbaShipWt<=2.5){fbaFee=5.30;sippDisc=0.12;}
+    else if(fbaShipWt<=3){fbaFee=5.71;sippDisc=0.12;}
+    else if(fbaShipWt<=4){fbaFee=6.05;sippDisc=0.15;}
+    else if(fbaShipWt<=5){fbaFee=6.39;sippDisc=0.15;}
+    else if(fbaShipWt<=6){fbaFee=6.75;sippDisc=0.18;}
+    else if(fbaShipWt<=7){fbaFee=7.01;sippDisc=0.18;}
+    else if(fbaShipWt<=8){fbaFee=7.17;sippDisc=0.20;}
+    else if(fbaShipWt<=9){fbaFee=7.37;sippDisc=0.20;}
+    else if(fbaShipWt<=10){fbaFee=7.52;sippDisc=0.20;}
+    else if(fbaShipWt<=11){fbaFee=7.68;sippDisc=0.20;}
+    else if(fbaShipWt<=12){fbaFee=7.85;sippDisc=0.20;}
+    else if(fbaShipWt<=13){fbaFee=8.00;sippDisc=0.20;}
+    else if(fbaShipWt<=14){fbaFee=8.14;sippDisc=0.20;}
+    else if(fbaShipWt<=15){fbaFee=8.32;sippDisc=0.22;}
+    else if(fbaShipWt<=16){fbaFee=8.50;sippDisc=0.22;}
+    else if(fbaShipWt<=17){fbaFee=8.70;sippDisc=0.22;}
+    else if(fbaShipWt<=18){fbaFee=8.90;sippDisc=0.22;}
+    else if(fbaShipWt<=19){fbaFee=9.10;sippDisc=0.22;}
+    else{fbaFee=9.30;sippDisc=0.23;}
+    if(sp>50) fbaFee+=0.31;
+  } else if(Li<=37&&Mi<=28&&Si<=20&&uwLb<=50){
+    fbaTier='Small Bulky (2026 New)';
+    // Small Bulky: SIPP discount removed in 2026, replaced by lower base fees
+    if(fbaShipWt<=2) fbaFee=7.55;
+    else if(fbaShipWt<=5) fbaFee=8.20;
+    else if(fbaShipWt<=10) fbaFee=9.40;
+    else if(fbaShipWt<=20) fbaFee=11.20;
+    else if(fbaShipWt<=30) fbaFee=14.10;
+    else fbaFee=14.10+0.42*Math.ceil(fbaShipWt-30);
+    sippDisc=0; // No SIPP discount for bulky in 2026
+  } else if(Li<=59&&Mi<=33&&Si<=33&&uwLb<=50){
+    fbaTier='Large Bulky';
+    if(fbaShipWt<=5) fbaFee=9.80;
+    else if(fbaShipWt<=10) fbaFee=12.50;
+    else if(fbaShipWt<=20) fbaFee=16.00;
+    else if(fbaShipWt<=30) fbaFee=19.50;
+    else if(fbaShipWt<=40) fbaFee=22.50;
+    else fbaFee=24.50;
+    sippDisc=0;
+  } else {
+    fbaTier='Extra-Large';
+    if(fbaShipWt<=50) fbaFee=26.33;
+    else if(fbaShipWt<=70) fbaFee=33.55;
+    else if(fbaShipWt<=150) fbaFee=46.80;
+    else fbaFee=46.80+0.42*Math.ceil(fbaShipWt-150);
+    sippDisc=0;
+  }
+
+  // SIPP note for display
+  var sippNote='';
+  if(fbaTier.indexOf('Bulky')>=0||fbaTier==='Extra-Large'){
+    sippNote='N/A (2026: Bulky/XL不再有SIPP折扣, 已降低基础费率)';
+  }
+
+  var fbaAfterSipp=Math.max(fbaFee-sippDisc,0);
+  var referralFee=sp*refPct;
+  var totalA=fbaAfterSipp+referralFee; // SIPP enrolled
+  // totalB now includes overbox impact: chargeback + FBA jump + prep
+  var totalOverboxPerUnit = obCbFee + fbaJumpCost + prepFeeEst;
+  var totalB=fbaFee+referralFee+totalOverboxPerUnit; // Not SIPP (worst case)
+  var sippSavingPc=sippDisc+totalOverboxPerUnit; // Total savings per unit if doing SIPP
+  var annSippSaving=sippSavingPc*af;
+
+  $('fba_sippTier').textContent=dt;
+  $('fba_tier').textContent=fbaTier;
+  $('fba_shipWt').textContent=fbaShipWt.toFixed(1)+' lb ('+wt.toFixed(2)+' kg)';
+  $('fba_fee').textContent='$'+fbaFee.toFixed(2);
+  $('fba_ref').textContent='$'+referralFee.toFixed(2)+' ('+val('referralPct')+'%)';
+
+  // Determine mode: NOT ELIGIBLE vs KEEP vs SIPP
+  // CRITICAL: Differentiate Too Small (overbox changes FBA tier) from Excluded (FBA stays on product dims)
+  var isNotEligible = (sipp!=='ELIGIBLE 合格' && !isHeavyBulky);
+  var isExcludedOnly = isNotEligible && !isTooSmall && (exclResult==='EXCLUDED 含排除项');
+  var isTooSmallNotEligible = isNotEligible && isTooSmall;
+  var isKeepMode = (!isNotEligible && !isNA && (costDec.indexOf('KEEP')>=0 || costDec.indexOf('accept')>=0));
+
+  if(isTooSmallNotEligible){
+    // TOO SMALL: Amazon must overbox — FBA based on overbox dimensions
+    var obFbaTier='', obFbaFee2=0;
+    if(obBox && obBox.l){
+      var obL2=obBox.l, obM2=obBox.w, obS2=obBox.h;
+      var obArr2=[obL2,obM2,obS2].sort(function(a,b){return b-a});
+      obL2=obArr2[0]; obM2=obArr2[1]; obS2=obArr2[2];
+      var obWt2=uwLb+0.5;
+      var obBw2=Math.max(obWt2, (obL2*obM2*obS2)/139);
+      obBw2=Math.ceil(obBw2*2)/2;
+      if(obL2<=15&&obM2<=12&&obS2<=0.75&&obWt2<=1){ obFbaTier='Small Standard'; obFbaFee2=3.97; }
+      else if(obL2<=18&&obM2<=14&&obS2<=8&&obWt2<=20){
+        obFbaTier='Large Standard';
+        if(obBw2<=1) obFbaFee2=4.19; else if(obBw2<=2) obFbaFee2=5.08;
+        else if(obBw2<=3) obFbaFee2=5.71; else if(obBw2<=5) obFbaFee2=6.39;
+        else if(obBw2<=7) obFbaFee2=7.01; else if(obBw2<=10) obFbaFee2=7.52;
+        else if(obBw2<=15) obFbaFee2=8.32; else obFbaFee2=9.30;
+      } else if(obL2<=37&&obM2<=28&&obS2<=20&&obWt2<=50){
+        obFbaTier='Small Bulky';
+        if(obBw2<=2) obFbaFee2=7.55; else if(obBw2<=5) obFbaFee2=8.20;
+        else if(obBw2<=10) obFbaFee2=9.40; else if(obBw2<=20) obFbaFee2=11.20;
+        else obFbaFee2=14.10;
+      } else if(obL2<=59&&obM2<=33&&obS2<=33&&obWt2<=50){
+        obFbaTier='Large Bulky'; obFbaFee2=16.00;
+      } else { obFbaTier='Extra-Large'; obFbaFee2=26.33; }
+    } else { obFbaTier=fbaTier; obFbaFee2=fbaFee; }
+    var obTotalCostPerUnit = obFbaFee2 + referralFee + obCbFee + prepFeeEst;
+    $('sec7_title').textContent='📊 包装对FBA成本影响 Packaging FBA Impact — ⚠️ 尺寸过小 Too Small for SIPP';
+    $('fba_boxTitle').innerHTML='📦 <span style="color:#991b1b">⚠️ 尺寸过小 Too Small</span> — FBA费用按Overbox尺寸计算 FBA fee based on overbox dimensions';
+    $('fba_sippTier').textContent=dt+' (尺寸过小 / Too Small for SIPP)';
+    $('fba_tier').textContent=obFbaTier+' (Overbox后 after overbox)';
+    $('fba_tier').style.color='#991b1b';
+    $('fba_shipWt').textContent=obBw2?obBw2.toFixed(1)+' lb (Overbox后估算 est. with overbox)':fbaShipWt.toFixed(1)+' lb';
+    $('fba_fee').textContent='$'+obFbaFee2.toFixed(2)+' (Overbox尺寸 overbox dimensions)';
+    $('row_sippDisc').style.display='none';
+    $('row_afterSipp').style.display='none';
+    $('fba_cb').textContent=obCbFee>0?'$'+obCbFee.toFixed(2)+'/unit (Non-Sortable chargeback)':'$0';
+    $('row_cb').style.display='';
+    $('fba_modeKeep').style.display='block';
+    $('fba_modeSipp').style.display='none';
+    $('fba_k_ful').textContent='$'+obFbaFee2.toFixed(2)+' (Overbox: '+obFbaTier+')';
+    $('fba_k_ref').textContent='$'+referralFee.toFixed(2);
+    $('fba_k_cb').textContent='$'+(obCbFee+prepFeeEst).toFixed(2)+' (CB $'+obCbFee.toFixed(2)+' + Prep $'+prepFeeEst.toFixed(2)+')';
+    $('fba_k_total').textContent='$'+obTotalCostPerUnit.toFixed(2);
+    $('fba_k_annCb').textContent='$'+((obCbFee+prepFeeEst)*af).toFixed(0)+' ('+af+' units)';
+    $('fba_k_potSave').textContent='N/A (尺寸过小不符合SIPP / Too Small — 需重新设计包装尺寸 redesign packaging size)';
+    $('be_upCost').textContent='N/A'; $('be_savPc').textContent='N/A';
+    $('be_net').textContent='N/A — 尺寸过小 / Too Small'; $('be_net').style.color='#991b1b';
+    $('be_vol').textContent='N/A'; $('be_roi').textContent='N/A';
+  } else if(isExcludedOnly){
+    // EXCLUDED: product dimensions are fine, but has SIPP exclusion (lithium battery, etc.)
+    // FBA fee based on PRODUCT's own dimensions (NOT overbox!)
+    var exclTotalPerUnit = fbaFee + referralFee;
+    var exclLostDiscount = earlySippDisc;
+    $('sec7_title').textContent='📊 包装对FBA成本影响 Packaging FBA Impact — ⚠️ SIPP排除项 Excluded from SIPP';
+    $('fba_boxTitle').innerHTML='📦 <span style="color:#b45309">⚠️ SIPP排除项 Excluded</span> — FBA费用按产品自身尺寸计算 FBA fee based on product dimensions (NOT overbox)';
+    $('fba_sippTier').textContent=dt+' (SIPP排除项 / Excluded from SIPP)';
+    $('fba_tier').textContent=fbaTier+' (按产品尺寸 product dimensions)';
+    $('fba_tier').style.color='#b45309';
+    $('fba_shipWt').textContent=fbaShipWt.toFixed(1)+' lb ('+wt.toFixed(2)+' kg)';
+    $('fba_fee').textContent='$'+fbaFee.toFixed(2);
+    $('row_sippDisc').style.display='';
+    $('fba_sipp').textContent=exclLostDiscount>0?'$0 (排除项无折扣 / Excluded — would be -$'+exclLostDiscount.toFixed(2)+' if eligible)':'N/A';
+    $('row_afterSipp').style.display='none';
+    $('fba_cb').textContent='$0 (排除项无罚款 / No chargeback for excluded items)';
+    $('row_cb').style.display='';
+    $('fba_modeKeep').style.display='block';
+    $('fba_modeSipp').style.display='none';
+    $('fba_k_ful').textContent='$'+fbaFee.toFixed(2)+' ('+fbaTier+')';
+    $('fba_k_ref').textContent='$'+referralFee.toFixed(2);
+    $('fba_k_cb').textContent='$0 (排除项: 无罚款无跳档 / Excluded: no chargeback, no tier jump)';
+    $('fba_k_total').textContent='$'+exclTotalPerUnit.toFixed(2);
+    $('fba_k_annCb').textContent='损失SIPP折扣 Lost discount: $'+exclLostDiscount.toFixed(2)+'/unit × '+af+' = $'+(exclLostDiscount*af).toFixed(0)+'/yr';
+    $('fba_k_potSave').textContent=exclLostDiscount>0?'如消除排除项可获SIPP折扣 $'+exclLostDiscount.toFixed(2)+'/unit / Remove exclusion for SIPP discount':'N/A';
+    $('be_upCost').textContent='取决于消除排除项成本 / Depends on exclusion removal cost';
+    $('be_savPc').textContent='$'+exclLostDiscount.toFixed(2)+' (SIPP折扣 discount only)';
+    $('be_net').textContent='排除项: FBA费率不受影响, 仅损失SIPP折扣'; $('be_net').style.color='#b45309';
+    $('be_vol').textContent='N/A'; $('be_roi').textContent='N/A';
+  } else if(isKeepMode){
+    // KEEP mode: not doing SIPP
+    $('fba_tier').style.color='';
+    $('sec7_title').textContent='📊 包装对FBA成本影响 Packaging FBA Impact — 维持包装 Keep Current (不做SIPP)';
+    $('row_sippDisc').style.display='none';
+    $('row_afterSipp').style.display='none';
+    $('fba_cb').textContent='$'+totalOverboxPerUnit.toFixed(2)+'/unit (CB+Jump+Prep)';
+    $('row_cb').style.display='';
+    $('fba_boxTitle').textContent='📦 当前 FBA Cost Breakdown (per unit) — Not SIPP (含Overbox成本)';
+    $('fba_modeKeep').style.display='block';
+    $('fba_modeSipp').style.display='none';
+    $('fba_k_ful').textContent='$'+fbaFee.toFixed(2);
+    $('fba_k_ref').textContent='$'+referralFee.toFixed(2);
+    $('fba_k_cb').textContent='$'+totalOverboxPerUnit.toFixed(2)+' (CB $'+obCbFee.toFixed(2)+' + Jump $'+fbaJumpCost.toFixed(2)+' + Prep $'+prepFeeEst.toFixed(2)+')';
+    $('fba_k_total').textContent='$'+totalB.toFixed(2);
+    $('fba_k_annCb').textContent='$'+obTotalAnn.toFixed(0)+' ('+af+' units)';
+    $('fba_k_potSave').textContent='$'+sippSavingPc.toFixed(2)+'/unit';
+  } else {
+    // SIPP mode: doing SIPP (NA default, or UPGRADE decision, Heavy/Bulky)
+    $('fba_tier').style.color='';
+    $('sec7_title').textContent='📊 包装对FBA成本影响 Packaging FBA Impact — SIPP认证方案 SIPP Enrolled';
+    // Show SIPP rows
+    $('row_sippDisc').style.display='';
+    $('row_afterSipp').style.display='';
+    $('fba_sipp').textContent=sippDisc>0?'-$'+sippDisc.toFixed(2):sippNote||'N/A';
+    $('fba_afterSipp').textContent='$'+fbaAfterSipp.toFixed(2);
+    $('fba_cb').textContent=cbFee>0?'$'+cbFee.toFixed(2)+'/unit':'$0';
+    $('row_cb').style.display=cbFee>0?'':'none';
+    $('fba_boxTitle').textContent='📦 FBA Fee Breakdown (per unit) — SIPP Enrolled';
+    // Show SIPP panel, hide KEEP panel
+    $('fba_modeKeep').style.display='none';
+    $('fba_modeSipp').style.display='block';
+    // Populate SIPP panel
+    $('fba_totalA').textContent='$'+totalA.toFixed(2);
+    $('fba_totalB').textContent='$'+totalB.toFixed(2);
+    $('fba_saving').textContent='$'+sippSavingPc.toFixed(2)+'/unit';
+    $('fba_annSaving').textContent='$'+annSippSaving.toFixed(2)+' ('+af+' Amazon units)';
+
+    // Break-even analysis
+    var beUpCost=incCost;
+    var beNetPerUnit=sippSavingPc-beUpCost;
+    var beVolume=beNetPerUnit>0?(tc/beNetPerUnit):Infinity;
+    var beRoi=((sippSavingPc*af)-(incCost*tf+tc))/(incCost*tf+tc||1)*100;
+
+    $('be_upCost').textContent='$'+beUpCost.toFixed(2);
+    $('be_savPc').textContent='$'+sippSavingPc.toFixed(2);
+    $('be_net').textContent=(beNetPerUnit>=0?'+':'')+beNetPerUnit.toFixed(2)+' USD/pc';
+    $('be_net').style.color=beNetPerUnit>=0?'#166534':'#991b1b';
+    $('be_vol').textContent=beVolume<Infinity&&beVolume>0?Math.ceil(beVolume)+' units':'N/A';
+    $('be_roi').textContent=isFinite(beRoi)?beRoi.toFixed(1)+'%':'N/A';
+  }
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNA,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth){
+  var fc=$('flowchart');
+  // Clear existing nodes
+  while(fc.firstChild) fc.removeChild(fc.firstChild);
+
+  function addNode(text,cls){
+    var d=document.createElement('div');
+    d.className='fc-node '+cls;
+    d.textContent=text;
+    fc.appendChild(d);
+  }
+  function addArrow(label){
+    var a=document.createElement('div');
+    a.className='fc-arrow';
+    fc.appendChild(a);
+    if(label){
+      var l=document.createElement('div');
+      l.className='fc-label';
+      l.textContent=label;
+      fc.appendChild(l);
+      var a2=document.createElement('div');
+      a2.className='fc-arrow';
+      fc.appendChild(a2);
+    }
+  }
+
+  // START
+  addNode('Start: Online Packaging Test\nLED Lamps / LUM / HUE / WIZ / Other','fc-start');
+  addArrow();
+
+  // Region
+  addNode('Sales Region: '+region,'fc-decision');
+  addArrow(region);
+
+  if(region==='China Online'){
+    addNode('Product Family: '+pf,'fc-decision');
+    addArrow(pf==='LED LUM'?'LED LUM':'Non-LUM');
+    if(pf==='LED LUM'){
+      addNode('China LUM Online Testing\nISTA 6 FedEx + ISTA 6 Amazon\nSamples: 3 sets · Internal test','fc-end');
+    } else {
+      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+    }
+  } else if(region==='Other local/3rd party/customer'){
+    addNode('Customer specified standard?\n'+cust,'fc-decision');
+    addArrow(cust);
+    if(cust==='Yes'){
+      addNode('Customer Specified Standard\nPer customer requirement','fc-end');
+    } else {
+      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+    }
+  } else if(!isAmz){
+    addNode('Sold on Amazon: No','fc-decision');
+    addArrow('Non-Amazon');
+    addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+  } else {
+    if(isNA){
+      addNode('NA default → Amazon SIPP Path','fc-process');
+    } else {
+      addNode('Sold on Amazon: Yes → Amazon SIPP Path','fc-process');
+    }
+    addArrow();
+
+    addNode('SIPP Exclusion Check\nResult: '+(exclResult==='EXCLUDED 含排除项'?'EXCLUDED':'PASSED'),'fc-decision');
+    if(exclResult==='EXCLUDED 含排除项'){
+      addArrow('EXCLUDED');
+      addNode('Not SIPP Eligible (Excluded item)\nAmazon standard fulfillment\nFBA by product dimensions\nISTA 3-Lite Test II · Internal','fc-end');
+    } else {
+      addArrow('PASSED');
+
+      addNode('SIPP Category: '+dt+'\nGirth: '+girth.toFixed(0)+' in','fc-decision');
+      if(isTooSmall){
+        addArrow('Too Small');
+        addNode('Amazon Overboxing (Not SIPP eligible)\nISTA 3-Lite Test II (internal baseline)\nSamples: 3UP+1OB · Drop+Vibration','fc-end');
+      } else if(isHeavyBulky){
+        addArrow('Heavy/Bulky');
+        addNode('Fragile: '+(isFr?'Yes':'No'),'fc-decision');
+        addArrow(isFr?'Fragile':'Non-fragile');
+        addNode('SIPP Heavy/Bulky — SIOC\nISTA 6A Type B-F\nSamples: '+(isFr?'5':'1'),'fc-end');
+      } else {
+        // Sortable or Non-Sortable
+        addArrow(isSortable?'Sortable (no chargeback)':'Non-Sortable (chargeback applies)');
+
+        if(isNA){
+          addNode('NA always SIPP\nFragile: '+(isFr?'Yes':'No'),'fc-decision');
+          addArrow(isFr?'Fragile':'Non-fragile');
+          if(isFr){
+            addNode('Redesign SIPP (Fragile)\nISTA 6A Type A · Certified Lab ONLY\nSamples: 5','fc-end');
+          } else {
+            addNode('SIPP Ready\nSelf-Drop Test or ISTA 6A Type A\nSamples: 1','fc-end');
+          }
+        } else if(!hasChargeback){
+          // Sortable, no chargeback — compare costs dynamically
+          addNode('Sortable: No chargeback\nCost comparison: Upgrade vs Prep+FBA diff','fc-decision');
+          if(costDec.indexOf('UPGRADE')>=0){
+            addArrow('UPGRADE (more cost-effective)');
+            if(isFr){
+              addNode('Upgrade to SIPP (Fragile)\nISTA 6A Type A · Certified Lab\nSamples: 5','fc-end');
+            } else {
+              addNode('Upgrade to SIPP\nSelf-Drop or ISTA 6A Type A\nSamples: 1','fc-end');
+            }
+          } else {
+            addArrow('KEEP (upgrade not justified)');
+            addNode('Keep Current Packaging\nISTA 3-Lite Test II · Internal · 3UP+1OB\nSIPP optional (small FBA discount only)','fc-end');
+          }
+        } else {
+          // Non-Sortable with chargeback — cost comparison
+          addNode('Cost Comparison\nUpgrade cost vs Chargeback cost','fc-decision');
+          addArrow(costDec==='UPGRADE (SIPP/ISTA6-A)'?'UPGRADE':'KEEP');
+          if(costDec==='KEEP baseline + pay chargeback'){
+            addNode('KEEP baseline + pay chargeback\nISTA 3-Lite Test II · Internal\nSamples: 3UP+1OB','fc-end');
+          } else {
+            addNode('UPGRADE to SIPP\nFragile: '+(isFr?'Yes':'No'),'fc-decision');
+            addArrow(isFr?'Fragile':'Non-fragile');
+            if(isFr){
+              addNode('Redesign SIPP (Fragile)\nISTA 6A Type A · Certified Lab ONLY\nSamples: 5','fc-end');
+            } else {
+              addNode('Redesign SIPP (Non-fragile)\nSelf-Drop or ISTA 6A Type A\nSamples: 1','fc-end');
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ─── Channel Switching ───
+var currentChannel = 'online';
+
+function switchChannel(ch){
+  currentChannel = ch;
+  if(ch==='online'){
+    $('onlinePanel').style.display='block';
+    $('offlinePanel').style.display='none';
+    $('btnOnline').style.background='var(--blue-600)';
+    $('btnOnline').style.borderColor='var(--blue-600)';
+    $('btnOnline').style.color='#fff';
+    $('btnOffline').style.background='#fff';
+    $('btnOffline').style.borderColor='var(--slate-300)';
+    $('btnOffline').style.color='var(--slate-600)';
+    $('hdr-path').textContent='Global Online Baseline';
+    $('mainFooter').textContent='Based on Signify Online Packaging Test Guideline Draft V10 · Dim Divisor=139, Rounding=0.5lb · Amazon FBA 2026 Non-Peak Rates · Overbox Estimator: adaptive padding 1"-2" per side, community box database';
+    recalc();
+  } else {
+    $('onlinePanel').style.display='none';
+    $('offlinePanel').style.display='block';
+    $('btnOffline').style.background='#7c3aed';
+    $('btnOffline').style.borderColor='#7c3aed';
+    $('btnOffline').style.color='#fff';
+    $('btnOnline').style.background='#fff';
+    $('btnOnline').style.borderColor='var(--slate-300)';
+    $('btnOnline').style.color='var(--slate-600)';
+    $('hdr-path').textContent='Offline Baseline';
+    $('mainFooter').textContent='Based on Signify Consumer Packaging Offline Packaging Test Guideline 20260128 · ISTA 3-Lite / UND1400';
+    offlineCalc();
+  }
+}
+
+function offlineCalc(){
+  var pf = val('off_productFamily');
+  var packEU = val('off_packEurope');
+  var region = val('off_salesRegion');
+  var mfg = val('off_mfgRegion');
+  var custStd = val('off_custStd');
+  var prodType = val('off_prodType');
+
+  var isAPR = mfg.indexOf('APR') >= 0;
+  var isPackedEU = packEU.indexOf('Yes') >= 0;
+  var isEuropeRegion = region.indexOf('Europe') >= 0;
+  var isSpecial = prodType.indexOf('Special') >= 0;
+  var isCustStd = custStd.indexOf('Yes') >= 0;
+
+  // Header path
+  $('hdr-path').textContent = 'Global Offline Baseline';
+
+  // Dynamic field visibility
+  if (pf === 'LED Lamps') {
+    $('off_packField').style.display = 'block';
+    $('off_regionField').style.display = 'none';
+  } else if (pf === 'LED LUM') {
+    $('off_packField').style.display = 'none';
+    $('off_regionField').style.display = 'block';
+  } else {
+    $('off_packField').style.display = 'none';
+    $('off_regionField').style.display = 'none';
+  }
+
+  var testStd, testMethod, testBasis, minSamp, decBasis;
+
+  if (isCustStd) {
+    testStd = '按客户/渠道指定标准\nPer customer/channel specified standard';
+    testMethod = '按客户要求\nPer customer requirement';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按客户/BU要求\nPer customer/BU requirement';
+    decBasis = '客户/渠道指定标准优先 / Customer/channel standard prevails';
+  } else if (isSpecial) {
+    testStd = '按项目团队定义 (参考相似产品类型)\nDefined by project team (map to similar product type)';
+    testMethod = '根据实际运输条件确定\nBased on actual transport conditions';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按项目/BU要求\nPer project/BU requirement';
+    decBasis = '特殊项目 — 按重量、尺寸、易碎性映射至相似产品类型\nSpecial project — mapped to similar product type by weight, dimensions and fragility';
+  } else if (pf === 'LED Lamps') {
+    if (isPackedEU) {
+      testStd = 'ISTA 3-Lite Test III\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+      decBasis = 'LED Lamps → Packed in Europe offline packaging / palletized transport → ISTA 3-Lite Test III';
+    } else {
+      testStd = 'ISTA 3-Lite Test II\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+      decBasis = 'LED Lamps → Other offline flows (including exports from Europe or non-palletized transport) → ISTA 3-Lite Test II';
+    }
+    testMethod = 'Drop + Vibration (OB外箱测试)\nDrop + Vibration (Outer Box based)';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按BU质量要求\nPer BU quality requirement';
+  } else if (pf === 'LED LUM') {
+    if (isEuropeRegion) {
+      testStd = 'ISTA 3-Lite Test III\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+      decBasis = 'LED LUM → Europe offline or palletized transport → ISTA 3-Lite Test III';
+    } else {
+      testStd = 'ISTA 3-Lite Test II\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+      decBasis = 'LED LUM → NAM / APR GMGC / other offline flows → ISTA 3-Lite Test II';
+    }
+    testMethod = 'Drop + Vibration (OB外箱测试)\nDrop + Vibration (Outer Box based)';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按BU质量要求\nPer BU quality requirement';
+  } else if (pf === 'HUE / WiZ') {
+    testStd = 'ISTA 3-Lite Test II\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+    testMethod = 'Drop + Vibration (OB外箱测试)\nDrop + Vibration (Outer Box based)';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按BU质量要求\nPer BU quality requirement';
+    decBasis = 'HUE / WiZ → All regions offline → ISTA 3-Lite Test II';
+  } else {
+    testStd = 'ISTA 3-Lite (参考相似产品类型)\nISTA 3-Lite (map to similar product type)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
+    testMethod = 'Drop + Vibration (OB外箱测试)\nDrop + Vibration (Outer Box based)';
+    testBasis = 'OB (外箱测试)\nOuter Box based testing';
+    minSamp = '按BU质量要求\nPer BU quality requirement';
+    decBasis = 'Other Consumer → ISTA 3-Lite (按相似产品映射 mapped to similar product type)';
+  }
+
+  // Pre-conditioning based on manufacturing region
+  var precon, predur;
+  if (isAPR) {
+    precon = '高湿预处理 (APR制造产品)\nHigh-humidity pre-conditioning (APR manufactured)\n温度 Temperature: 38°C · 相对湿度 Relative Humidity: 85%';
+    predur = '24 hours (APR高湿标准 APR high-humidity standard)';
+  } else {
+    precon = '标准环境预处理 Standard ambient pre-conditioning\n温度 Temperature: 20–23°C · 相对湿度 Relative Humidity: 40–65%';
+    predur = '标准 Regular 48 hours (最少 Min. 24 hours)';
+  }
+
+  // Compression test
+  var compress;
+  if (isAPR && pf === 'Other Consumer Products (其他消费品)') {
+    compress = '✅ APR制造的其他消费品必须增加压缩试验\nMandatory for APR other consumer products\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+  } else if (isAPR) {
+    compress = '⚠️ APR制造建议增加压缩试验\nAPR manufactured — Recommend adding quick compression test\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+  } else {
+    compress = '非APR制造可选，根据工程判断和风险评估决定\nOptional for non-APR — based on engineering judgement & risk assessment\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+  }
+
+  var roll = '可选 — 适用于有滚动/旋转冲击风险的灯具产品\nOptional — For luminaires with rolling/rotational impact risk\n标准: UN-D 1400 (2011) — IV ROLLING TEST\n文件: UN-D 1400 (2011).pdf';
+  var topple = '可选 — 适用于高/细长/重心不稳的包装\nOptional — For tall, slender or unstable packages\n标准: UN-D 1400 (2011) — V TOPPLING TEST\n文件: UN-D 1400 (2011).pdf';
+  var stack = '可选 — 适用于长期仓储或高堆码场景 (如堆码程序1或2)\nOptional — For long-term warehouse stacking risk (e.g. stacking program 1 or 2)\n标准: UN-D 1400 (2011) — IX STACKING TEST\n文件: UN-D 1400 (2011).pdf';
+
+  var notes = '<b>参考标准文件 Referenced Standards and Requirements:</b><br>';
+  notes += '• ISTA 3-Lite: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf<br>';
+  notes += '• UND1400 (Reference): UN-D 1400 (2011).pdf<br>';
+  notes += '• ISTA 1A (Reference): 1.ISTA Procedure 1A 14-16.pdf<br>';
+  notes += '<span style="font-size:10px;opacity:0.7">Document locations maintained in Consumer shared folder 文件存放于Consumer共享文件夹</span><br><br>';
+  notes += 'Note 1: 特殊项目或第三方品牌项目，最终试验标准由项目团队定义。<br>For special projects or projects using customer / private label or other third-party brands, the final test standard shall be defined by the project team.<br><br>';
+  notes += 'Note 2: 未覆盖的消费品按重量、尺寸、易碎性映射至相似产品类型。<br>For Consumer products not covered in the above categories, the test standard shall be selected by mapping to a similar product type based on weight, dimensions and fragility.<br><br>';
+  notes += 'Note 3: 线下产品运输包装测试基于外箱(OB)进行。<br>Offline product transport packaging tests are conducted based on OB (outer box).<br><br>';
+  notes += 'Note 4: 样品数量遵循BU质量要求。<br>Test sample quantities shall follow the relevant BU quality requirements.';
+  if (isCustStd) {
+    notes = '<b>⚠️ 客户/渠道指定标准优先于本指南要求。</b><br><b>Where offline shipments follow a channel or customer standard that is more stringent than this Guideline, the higher requirement shall prevail.</b><br><br>' + notes;
+  }
+
+  // Populate result UI
+  $('off_r_std').textContent = testStd;
+  $('off_r_method').textContent = testMethod;
+  $('off_r_basis').textContent = testBasis;
+  $('off_r_samp').textContent = minSamp;
+  $('off_r_dec').textContent = decBasis;
+  $('off_r_precon').textContent = precon;
+  $('off_r_predur').textContent = predur;
+  $('off_r_core').textContent = testStd.split('\n')[0];
+  $('off_r_compress').textContent = compress;
+  $('off_r_roll').textContent = roll;
+  $('off_r_topple').textContent = topple;
+  $('off_r_stack').textContent = stack;
+  $('off_r_notes').innerHTML = notes;
+  // ✅ Documents 显示逻辑
+  let docsHtml = "";
+
+// ✅ 1. Offline Guideline（放第一位）
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_offline_Packaging_Test_Guideline%2020260228.docx?d=w50862ed45e514b679f7d32a92ac04120&csf=1&web=1&e=ibBGXB"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     Offline Packaging Test Guideline
+  </a>
+</div>`;
+
+// ✅ 2. ISTA
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:b:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Current%20test%20standards/Consumer/ISTA%203%20Lite%20-%20rev%201.2_06-01-2023%202.pdf?csf=1&web=1&e=4jWobo"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     ISTA 3-Lite Standard
+  </a>
+</div>`;
+
+// ✅ 3. UN-D
+docsHtml += `
+<div style="margin-bottom:6px;">
+  📄 <a href="https://share.lighting.com/:b:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Current%20test%20standards/Consumer/UN-D%201400%20(2011).pdf?csf=1&web=1&e=p1bWXY"
+     target="_blank"
+     style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
+     UN-D 1400
+  </a>
+</div>`;
+
+$('off_r_docs').innerHTML = docsHtml;
+
+  // Build Offline Flowchart
+  var fc = $('offFlowchart');
+  while (fc.firstChild) fc.removeChild(fc.firstChild);
+
+  function addN(text, cls) {
+    var d = document.createElement('div');
+    d.className = 'fc-node ' + cls;
+    d.textContent = text;
+    fc.appendChild(d);
+  }
+
+  function addA(label) {
+    var a = document.createElement('div');
+    a.className = 'fc-arrow';
+    fc.appendChild(a);
+    if (label) {
+      var l = document.createElement('div');
+      l.className = 'fc-label';
+      l.textContent = label;
+      fc.appendChild(l);
+      var a2 = document.createElement('div');
+      a2.className = 'fc-arrow';
+      fc.appendChild(a2);
+    }
+  }
+
+  addN('Start: Offline Packaging\nLED Lamps / LED LUM / HUE / WiZ','fc-start');
+  addA();
+  addN('Product Category?','fc-decision');
+
+  if (isCustStd) {
+    addA('Customer standard');
+    addN('Per customer/channel specified standard','fc-end');
+  } else if (isSpecial) {
+    addA('Special Project');
+    addN('Defined by project team\n(map to similar product type)','fc-end');
+  } else if (pf === 'LED Lamps') {
+    addA('LED Lamps');
+    addN('Packed in Europe offline packaging?','fc-decision');
+    addA(isPackedEU ? 'Yes' : 'No');
+    if (isPackedEU) {
+      addN('LED Lamps\nPacked in Europe offline packaging\n/ palletized transport\n\nTest standard:\nISTA 3-Lite Test III','fc-end');
+    } else {
+      addN('LED Lamps\nOther offline flows\n(including exports from Europe\nor non-palletized transport)\n\nTest standard:\nISTA 3-Lite Test II','fc-end');
+    }
+  } else if (pf === 'LED LUM') {
+    addA('LED LUM');
+    addN('LED LUM sales region?','fc-decision');
+    addA(isEuropeRegion ? 'Europe offline / palletized' : 'NAM / APR / other');
+    if (isEuropeRegion) {
+      addN('LED LUM\nEurope offline or palletized transport\n\nTest standard:\nISTA 3-Lite Test III','fc-end');
+    } else {
+      addN('LED LUM\nNAM / APR GMGC / other offline flows\n\nTest standard:\nISTA 3-Lite Test II','fc-end');
+    }
+  } else if (pf === 'HUE / WiZ') {
+    addA('HUE / WiZ');
+    addN('HUE / WiZ\nAll regions offline\n\nTest standard:\nISTA 3-Lite Test II','fc-end');
+  } else {
+    addA('Other Consumer');
+    addN('Map to similar product type\nby weight / dimensions / fragility\n\nTest standard:\nISTA 3-Lite (reference)','fc-end');
+  }
+}
+function pdfRow(label, value){
+  return `<tr>
+    <td style="width:32%;border:1px solid #d1d5db;padding:6px 8px;font-weight:600;background:#f8fafc;">${label}</td>
+    <td style="border:1px solid #d1d5db;padding:6px 8px;white-space:pre-line;">${value ?? ''}</td>
+  </tr>`;
+}
+
+function generatePdfReport(){
+  const now = new Date();
+  $('pdf_gen_time').textContent = now.toLocaleString();
+
+  let inputRows = '';
+  let dimRows = '';
+  let resultRows = '';
+  let calcRows = '';
+  let docsRows = '';
+
+  if(currentChannel === 'online'){
+    inputRows += pdfRow('Sales Channel', 'Online');
+    inputRows += pdfRow('Sales Region', val('region'));
+    inputRows += pdfRow('Product Family', val('productFamily'));
+    inputRows += pdfRow('Amazon Sold', val('amazonSold'));
+    inputRows += pdfRow('Customer Standard', val('customerStandard'));
+    inputRows += pdfRow('Fragility', val('fragility'));
+
+    dimRows += pdfRow('Input Unit', currentUnit === 'metric' ? 'Metric (mm/kg)' : 'Imperial (in/lb)');
+    dimRows += pdfRow('Length', num('length') + ' ' + (currentUnit === 'metric' ? 'mm' : 'in'));
+    dimRows += pdfRow('Width', num('width') + ' ' + (currentUnit === 'metric' ? 'mm' : 'in'));
+    dimRows += pdfRow('Height', num('height') + ' ' + (currentUnit === 'metric' ? 'mm' : 'in'));
+    dimRows += pdfRow('Weight', num('weight') + ' ' + (currentUnit === 'metric' ? 'kg' : 'lb'));
+
+    resultRows += pdfRow('Decision Path', $('r_dp').textContent);
+    resultRows += pdfRow('Packaging Route', $('r_pkg').textContent);
+    resultRows += pdfRow('Test Standard', $('r_std').textContent);
+    resultRows += pdfRow('Test Method', $('r_method').textContent);
+    resultRows += pdfRow('Min. Samples', $('r_samp').textContent);
+    resultRows += pdfRow('Test Procedure', $('r_proc').textContent);
+    resultRows += pdfRow('Decision Basis', $('r_basis').textContent);
+
+    calcRows += pdfRow('Sorted Dimensions (mm)', $('sortedMm').textContent);
+    calcRows += pdfRow('Sorted Dimensions (in)', $('sortedIn').textContent);
+    calcRows += pdfRow('Unit Weight', $('unitWtLb').textContent);
+    calcRows += pdfRow('Dim Weight', $('dimWtLb').textContent);
+    calcRows += pdfRow('Billable Weight', $('billWt').textContent);
+    calcRows += pdfRow('Girth', $('girthVal').textContent);
+    calcRows += pdfRow('SIPP Category', $('dimTierBadge').textContent);
+    calcRows += pdfRow('Exclusion Result', $('exclusionResult').textContent);
+    calcRows += pdfRow('SIPP Eligible', $('sippBadge').textContent);
+
+    if($('costCompareCard').style.display !== 'none'){
+      calcRows += pdfRow('Annual Upgrade Cost', $('cc_totalUp').textContent);
+      calcRows += pdfRow('Annual No-SIPP Cost', $('cc_totalKeep').textContent);
+      calcRows += pdfRow('Cost Decision', $('cc_verdictText').textContent);
+    }
+
+    docsRows = $('r_docs').innerHTML;
+  } else {
+    inputRows += pdfRow('Sales Channel', 'Offline');
+    inputRows += pdfRow('Product Family', val('off_productFamily'));
+    inputRows += pdfRow('Packed in Europe', $('off_packField').style.display !== 'none' ? val('off_packEurope') : 'N/A');
+    inputRows += pdfRow('Sales/Shipping Region', $('off_regionField').style.display !== 'none' ? val('off_salesRegion') : 'N/A');
+    inputRows += pdfRow('Customer/Channel Standard', val('off_custStd'));
+    inputRows += pdfRow('Product Type', val('off_prodType'));
+    inputRows += pdfRow('Manufacturing Region', val('off_mfgRegion'));
+
+    dimRows += pdfRow('Package Size / Weight', 'Offline module currently does not capture dimensions/weight');
+    dimRows += pdfRow('Note', 'Add offline dimension fields later if needed');
+
+    resultRows += pdfRow('Test Standard', $('off_r_std').textContent);
+    resultRows += pdfRow('Test Method', $('off_r_method').textContent);
+    resultRows += pdfRow('Test Basis', $('off_r_basis').textContent);
+    resultRows += pdfRow('Min. Samples', $('off_r_samp').textContent);
+    resultRows += pdfRow('Decision Basis', $('off_r_dec').textContent);
+
+    calcRows += pdfRow('Pre-conditioning', $('off_r_precon').textContent);
+    calcRows += pdfRow('Pre-conditioning Duration', $('off_r_predur').textContent);
+    calcRows += pdfRow('Core Test', $('off_r_core').textContent);
+    calcRows += pdfRow('Compression Test', $('off_r_compress').textContent);
+    calcRows += pdfRow('Rolling Test', $('off_r_roll').textContent);
+    calcRows += pdfRow('Toppling Test', $('off_r_topple').textContent);
+    calcRows += pdfRow('Stacking Test', $('off_r_stack').textContent);
+
+    docsRows = $('off_r_docs').innerHTML;
+  }
+
+  $('pdf_input_rows').innerHTML = inputRows;
+$('pdf_dim_rows').innerHTML = dimRows;
+$('pdf_result_rows').innerHTML = resultRows;
+$('pdf_calc_rows').innerHTML = calcRows;
+$('pdf_docs_rows').innerHTML = docsRows;
+
+// 先显示 PDF 报告，再进入打印模式
+$('pdfReport').style.display = 'block';
+document.body.classList.add('printing-pdf');
+
+setTimeout(() => {
+  window.print();
+
+  setTimeout(() => {
+    document.body.classList.remove('printing-pdf');
+    $('pdfReport').style.display = 'none';
+  }, 300);
+}, 100);
+}
+// Init
+recalc();
+</script>
+</body>
+</html>
