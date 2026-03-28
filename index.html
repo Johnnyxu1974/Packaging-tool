@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signify Packaging Test Guideline Visualization & Decision System</title>
+<title>Packaging Test Decision System(Consumer Pack)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -88,6 +88,23 @@
     background: var(--slate-100); color: var(--slate-400); cursor: not-allowed;
   }
   .field input[type="number"] { width: 140px; }
+
+  .amazon-sold-row { align-items: flex-start; }
+  .amazon-sold-select {
+    width: 120px !important;
+    min-width: 120px;
+    max-width: 120px !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .amazon-sold-hint {
+    display: block;
+    margin-top: 8px;
+    white-space: normal;
+    line-height: 1.5;
+  }
   .hint { font-size: 11px; color: var(--slate-400); font-style: italic; white-space: nowrap; }
   .unit { font-size: 12px; color: var(--slate-500); }
   .section-hint { font-size: 11px; color: var(--slate-400); margin: -8px 0 12px; }
@@ -236,13 +253,63 @@
     <div class="header-top">
       <div class="header-icon">📦</div>
       <div>
-        <h1>Signify Packaging Test Guideline Visualization & Decision Tool</h1>
+        <h1>Packaging Test Decision System(Consumer Pack)</h1>
         <p>适用于在线及线下销售消费品包装测试标准选择 · Online (Amazon/D2C) & Offline (Retail/RDC)</p>
       </div>
     </div>
     <div class="path-banner">
       <span class="lbl">当前决策路径 Current Decision Path</span>
       <span class="val" id="hdr-path">—</span>
+    </div>
+  </div>
+
+  <!-- BRAND SELECTION (before Step 0) -->
+  <div class="section" id="secBrand" style="border:2px solid #059669">
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#059669,#047857)">B</div><span class="section-title">🏷️ Brand Type 品牌类型选择</span></div>
+    <div style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.6">
+      请先选择产品使用的品牌类型。第三方/客户品牌如有自身试验要求，则优先执行该要求。<br>
+      Select the brand type first. If a third-party/customer brand has its own packaging test requirement, that requirement shall be followed.
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="btnSignify" onclick="switchBrand('signify')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid #059669;background:#059669;color:#fff;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
+        🏢 Signify 自有品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Philips / Signify branded products<br>按本指南标准流程选择试验标准</span>
+      </button>
+      <button id="btnThirdParty" onclick="switchBrand('thirdparty')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
+        🤝 第三方 / 客户品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Third-party / Customer / Private Label<br>优先执行客户品牌自身试验标准</span>
+      </button>
+    </div>
+    <!-- Sub-question: does third-party brand have its own test requirement? -->
+    <div id="tpSubQuestion" style="display:none;margin-top:16px;padding:16px 20px;border-radius:10px;background:#f0fdf4;border:1px solid #86efac">
+      <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:10px">第三方/客户品牌是否有自身的包装试验要求？<br>Does the third-party brand have its own packaging test requirement?</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button id="btnTpHasReq" onclick="switchTpReq('yes')" style="flex:1;min-width:180px;padding:12px 16px;border-radius:10px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;transition:all 0.2s;line-height:1.5">
+          ✅ 有 Yes — 有自身试验标准<br><span style="font-size:11px;font-weight:400">Has own test requirement → 按客户要求执行</span>
+        </button>
+        <button id="btnTpNoReq" onclick="switchTpReq('no')" style="flex:1;min-width:180px;padding:12px 16px;border-radius:10px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;transition:all 0.2s;line-height:1.5">
+          ❌ 没有 No — 无特定要求<br><span style="font-size:11px;font-weight:400">No specific requirement → 按Signify标准流程执行</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THIRD-PARTY BRAND RESULT (shown when third-party has own requirement) -->
+  <div id="thirdPartyResult" style="display:none">
+    <div class="result-panel">
+      <div class="result-head"><span style="font-size:22px">🎯</span><h2>第三方/客户品牌试验路径结果 THIRD-PARTY BRAND TEST PATH RESULT</h2></div>
+      <div class="result-card">
+        <div class="result-row"><span class="lbl">品牌类型 Brand Type</span><span class="val">第三方 / 客户品牌 Third-party / Customer Brand</span></div>
+        <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val">按第三方/客户品牌自身试验标准执行<br>Per third-party / customer brand's own packaging test requirement</span></div>
+        <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
+        <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">判断依据 Decision Basis</span><span class="val">第三方/客户品牌有自身试验标准，该要求优先于本指南。<br>Third-party/customer brand has its own test requirement, which shall prevail over this Guideline.<br><br>如客户标准不低于本指南要求，则以客户标准为准。<br>Where the brand's standard is more stringent than this Guideline, the higher requirement shall prevail.</span></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7">
+          <b>参考 Reference:</b><br>
+          Note 1 (Online Guideline): For projects using third-party brands, if the third-party brand has its own packaging test requirement, that requirement shall be followed.<br>
+          Note 1 (Offline Guideline): For customer / private label or other third-party brand projects, if the third-party brand has its own packaging test requirement, that requirement shall be followed.
+        </div>
+      </div>
     </div>
   </div>
 
@@ -272,8 +339,8 @@
     <div class="grid-2">
       <div class="field"><label>Sales Region 销售地区</label>
         <select id="region" onchange="recalc()">
-          <option>North America (US/CA)</option><option>Europe & Rest of World (excl. China)</option>
-          <option selected>China Online</option><option>Other local/3rd party/customer</option>
+          <option selected>North America (US/CA)</option><option>Europe & Rest of World (excl. China & NAM)</option>
+          <option>China Online</option><option>Other local/3rd party/customer</option>
         </select>
       </div>
       <div class="field"><label>Product Family 产品系列</label>
@@ -283,10 +350,10 @@
         </select>
       </div>
       <div class="field"><label>Amazon销售? Is sold on Amazon?</label>
-        <div class="field-row">
-          <select id="amazonSold" onchange="recalc()"><option selected>Yes</option><option>No</option></select>
-          <span class="hint" id="amazonHint"></span>
+        <div class="field-row amazon-sold-row">
+          <select id="amazonSold" class="amazon-sold-select" onchange="recalc()"><option selected>Yes</option><option>No</option></select>
         </div>
+        <div class="hint amazon-sold-hint" id="amazonHint"></div>
       </div>
       <div class="field"><label>客户指定标准? Customer standard?</label>
         <select id="customerStandard" onchange="recalc()"><option>Yes</option><option selected>No</option></select>
@@ -363,14 +430,15 @@
         <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📦 Overbox 影响估算 Overbox Impact Estimator</div>
         <div style="font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.6">
           如果不通过SIPP认证, Amazon可能会对产品加外箱(overbox)发货。以下估算overbox后的尺寸变化和费用影响。<br>
-          If not SIPP certified, Amazon may add an overbox. Below estimates the dimension change and cost impact.
+          If not SIPP certified, Amazon may add an overbox. Below estimates the dimension change and cost impact using internal buffer presets and community reference box sizes.
         </div>
         <div class="grid-2">
           <div class="info-row"><span class="lbl">原包装尺寸 Original Size</span><span class="val" id="ob_origSize"></span></div>
           <div class="info-row"><span class="lbl">原尺寸档位 Original Size Tier</span><span class="val" id="ob_origTier"></span></div>
           <div class="info-row"><span class="lbl">估算Overbox尺寸 Est. Overbox Size</span><span class="val" style="color:#991b1b;font-weight:700" id="ob_newSize"></span></div>
           <div class="info-row"><span class="lbl">Overbox后尺寸档位 Size Tier after Overbox</span><span class="val" style="font-weight:700" id="ob_newTier"></span></div>
-          <div class="info-row"><span class="lbl">匹配Amazon箱号 Matched Amazon Box Code</span><span class="val" id="ob_boxCode"></span></div>
+          <div class="info-row"><span class="lbl">参考Amazon箱号 Ref. Amazon Box Code</span><span class="val" id="ob_boxCode"></span></div>
+          <div class="info-row"><span class="lbl">后台Buffer逻辑 Applied Buffer Logic</span><span class="val" id="ob_bufferRule"></span></div>
           <div class="info-row"><span class="lbl">是否从Sortable变Non-Sortable? Sortable→Non-Sortable?</span><span class="val" style="font-weight:700" id="ob_tierJump"></span></div>
         </div>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,158,11,0.3)">
@@ -606,6 +674,15 @@
       <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">1</div><span class="section-title">📦 Offline Product Info 线下产品信息</span></div>
       <div class="grid-2">
         <div class="field">
+          <label>项目/渠道类型 Project / Channel Type</label>
+          <select id="off_projType" onchange="offlineCalc()">
+            <option selected>Standard Consumer (标准消费品)</option>
+            <option>Customer/Channel Specified Standard (客户/渠道指定标准)</option>
+            <option>Special Project (特殊项目)</option>
+          </select>
+        </div>
+
+        <div class="field" id="off_pfField">
           <label>Product Family 产品系列</label>
           <select id="off_productFamily" onchange="offlineCalc()">
             <option selected>LED Lamps</option>
@@ -632,26 +709,21 @@
         </div>
       
         <div class="field">
-          <label>客户/渠道指定标准? Customer/Channel specified standard?</label>
-          <select id="off_custStd" onchange="offlineCalc()">
-            <option>Yes 是</option>
-            <option selected>No 否</option>
+          <label>储运环境暴露风险 Storage / Distribution Exposure Risk</label>
+          <select id="off_storageEnv" onchange="offlineCalc()">
+            <option selected>Normal indoor storage only (仅常规室内仓储)</option>
+            <option>Seasonal hot / humid exposure possible (可能经历季节性高温高湿)</option>
+            <option>Non-controlled warehouse / long transit / hot-humid exposure likely (非受控仓储/长途运输/较高湿热暴露可能)</option>
           </select>
         </div>
-      
+
         <div class="field">
-          <label>产品类型 Product Type</label>
-          <select id="off_prodType" onchange="offlineCalc()">
-            <option selected>Standard Consumer (LED Lamp/LUM/HUE/WiZ)</option>
-            <option>Special Project (特殊项目)</option>
-          </select>
-        </div>
-      
-        <div class="field">
-          <label>产品制造地区 Manufacturing Region (用于预处理条件)</label>
-          <select id="off_mfgRegion" onchange="offlineCalc()">
-            <option selected>APR (亚太地区, e.g. GMGC)</option>
-            <option>Non-APR (欧洲/北美/其他)</option>
+          <label>预计储存时间 Expected Storage Duration</label>
+          <select id="off_storageTime" onchange="offlineCalc()">
+            <option>1–3 months (短期)</option>
+            <option selected>3–6 months (常规)</option>
+            <option>6–12 months (中等偏长)</option>
+            <option>&gt;12 months (长期)</option>
           </select>
         </div>
       </div>
@@ -679,7 +751,8 @@
       <div class="result-card" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3)">
         <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:10px">🌡️ 环境预处理 Environmental Pre-conditioning</div>
         <div class="result-row"><span class="lbl">预处理条件 Conditions</span><span class="val" id="off_r_precon"></span></div>
-        <div class="result-row" style="border-bottom:none"><span class="lbl">预处理时间 Duration</span><span class="val" id="off_r_predur"></span></div>
+        <div class="result-row"><span class="lbl">预处理时间 Duration</span><span class="val" id="off_r_predur"></span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">预处理建议 Recommendation</span><span class="val" id="off_r_preAdvice"></span></div>
       </div>
 
       <!-- Core Tests -->
@@ -740,7 +813,7 @@
   <div style="border-bottom:2px solid #1e3a5f;padding-bottom:10px;margin-bottom:18px;">
     <div style="font-size:22px;font-weight:800;color:#1e3a5f;">Packaging Decision Result Report</div>
     <div style="font-size:12px;color:#64748b;margin-top:4px;">
-      Signify Packaging Test Guideline Visualization & Decision Tool
+      Packaging Test Decision System(Consumer Pack)
     </div>
     <div style="font-size:12px;color:#64748b;margin-top:4px;">
       Generated on: <span id="pdf_gen_time"></span>
@@ -793,6 +866,7 @@ const DIV = 139, RND = 0.5;
 
 // Amazon standard overbox sizes (inches) - from boxdimensions.com community data
 // Sorted by volume for efficient matching
+// Reference box list aligned primarily to community box-size tables (BoxDimensions style references)
 const AMAZON_BOXES = [
   {name:'0A0', l:9.25, w:6.5, h:2.25},
   {name:'A0',  l:10.25, w:7, h:2.25},
@@ -890,29 +964,59 @@ const AMAZON_BOXES = [
   {name:'3A1', l:31, w:20.5, h:10.5},
 ].sort((a,b)=>(a.l*a.w*a.h)-(b.l*b.w*b.h));
 
-// Find the smallest Amazon standard box that can fit the product + cushioning
-// Amazon requires min 2" cushioning between product and box walls on all sides
-// In practice: 1-2" per side depending on product size
-function findOverbox(pLin, pWin, pHin){
-  // Adaptive padding: smaller products need less absolute padding
-  var maxDim = Math.max(pLin, pWin, pHin);
-  var padPerSide;
-  if(maxDim <= 10) padPerSide = 1.0;       // small products: 1" per side
-  else if(maxDim <= 18) padPerSide = 1.5;   // medium products: 1.5" per side
-  else padPerSide = 2.0;                     // large products: 2" per side (Amazon min requirement)
-  var pad = padPerSide * 2; // total per dimension (both sides)
-  var needL = pLin + pad, needW = pWin + pad, needH = pHin + pad;
-  // Sort product dims descending for matching
+// Find the smallest reference Amazon box that can fit the product + internal buffer
+// Internal engineering rule (not official Amazon spec):
+// 1) Default: L/W +1.0in per side, H +0.75in per side
+// 2) Slender pack (L/W ≥ 2.5 or L/H ≥ 4): total add L+2.0, W+1.5, H+1.0
+// 3) >5 kg AND fragile: upgrade to L/W +1.25in per side, H +1.0in per side
+// 4) >10 kg: conservative mode, +1.5in per side on all dimensions
+function findOverbox(pLin, pWin, pHin, unitWtLb, fragilityText){
+  var dims = [pLin, pWin, pHin].sort((a,b)=>b-a); // L ≥ W ≥ H
+  var L = dims[0], W = dims[1], H = dims[2];
+  var unitWtKg = unitWtLb / 2.20462262;
+  var isSlender = (W > 0 && (L / W) >= 2.5) || (H > 0 && (L / H) >= 4);
+  var isFragile = /Fragile/i.test(fragilityText || '');
+  var ruleLabel = '';
+  var addL = 0, addW = 0, addH = 0;
+
+  if(unitWtKg > 10){
+    addL = 3.0; addW = 3.0; addH = 3.0; // conservative, total per dimension
+    ruleLabel = 'Conservative (>10 kg): +1.5 in/side all dimensions';
+  } else if(unitWtKg > 5 && isFragile){
+    addL = 2.5; addW = 2.5; addH = 2.0;
+    ruleLabel = '>5 kg + Fragile: L/W +1.25 in/side, H +1.0 in/side';
+  } else if(isSlender){
+    addL = 2.0; addW = 1.5; addH = 1.0;
+    ruleLabel = 'Slender mode: total add L+2.0, W+1.5, H+1.0 in';
+  } else {
+    addL = 2.0; addW = 2.0; addH = 1.5;
+    ruleLabel = 'Default: L/W +1.0 in/side, H +0.75 in/side';
+  }
+
+  var needL = L + addL, needW = W + addW, needH = H + addH;
   var need = [needL, needW, needH].sort((a,b)=>b-a);
+
   for(var i=0; i<AMAZON_BOXES.length; i++){
     var box = AMAZON_BOXES[i];
     var bd = [box.l, box.w, box.h].sort((a,b)=>b-a);
     if(bd[0]>=need[0] && bd[1]>=need[1] && bd[2]>=need[2]){
-      return {name:box.name, l:bd[0], w:bd[1], h:bd[2], vol:bd[0]*bd[1]*bd[2]};
+      return {
+        name: box.name,
+        l: bd[0], w: bd[1], h: bd[2],
+        vol: bd[0]*bd[1]*bd[2],
+        rule: ruleLabel,
+        isSlender: isSlender,
+        source: 'Community reference'
+      };
     }
   }
-  // No standard box found, estimate custom overbox with adaptive padding
-  return {name:'Custom/Oversize', l:need[0], w:need[1], h:need[2], vol:need[0]*need[1]*need[2]};
+  return {
+    name:'Custom/Oversize',
+    l:need[0], w:need[1], h:need[2], vol:need[0]*need[1]*need[2],
+    rule: ruleLabel + ' · no listed reference box fit',
+    isSlender: isSlender,
+    source: 'Estimated custom'
+  };
 }
 
 // Determine if overbox pushes product into a different size tier
@@ -996,8 +1100,8 @@ function recalc(){
 
   // Step 1
   let dp;
-  if(region==='North America (US/CA)') dp='Amazon SIPP Path (NA默认 NA default)';
-  else if(region==='Europe & Rest of World (excl. China)') dp=amz==='Yes'?'Amazon SIPP Path':'Global Online Baseline';
+  if(region==='North America (US/CA)') dp=amz==='Yes'?'Amazon SIPP Path (NA default / selectable)':'Global Online Baseline';
+  else if(region==='Europe & Rest of World (excl. China & NAM)') dp=amz==='Yes'?'Amazon SIPP Path':'Global Online Baseline';
   else if(region==='China Online') dp=pf==='LED LUM'?'China LUM Online Testing':'Global Online Baseline';
   else if(region==='Other local/3rd party/customer') dp=cust==='Yes'?'Customer Specified 客户指定标准':'Global Online Baseline';
   else dp='Please select region';
@@ -1005,11 +1109,11 @@ function recalc(){
 
   // Hints & disable
   let ah;
-  if(region==='North America (US/CA)') ah='← NA默认走Amazon, 此项无需选择';
+  if(region==='North America (US/CA)') ah='← NA默认多为Amazon, 但仍可选择非Amazon路径 / NA usually Amazon, but Non-Amazon can still be selected';
   else if(region==='China Online'||region==='Other local/3rd party/customer') ah='← 此地区不适用Amazon选项';
   else ah='← Europe & RoW: 选择是否在Amazon销售';
   $('amazonHint').textContent=ah;
-  $('amazonSold').disabled=(region!=='Europe & Rest of World (excl. China)');
+  $('amazonSold').disabled=!(region==='Europe & Rest of World (excl. China & NAM)' || region==='North America (US/CA)');
   $('customerStandard').disabled=(region!=='Other local/3rd party/customer');
 
   // Show UP note only for Global Online Baseline and Customer Specified paths
@@ -1137,7 +1241,7 @@ function recalc(){
 
   // ─── Overbox Impact Estimation ───
   var origTier = getSizeTierFromDims(Li, Mi, Si, uwLb);
-  var obBox = findOverbox(Li, Mi, Si);
+  var obBox = findOverbox(Li, Mi, Si, uwLb, frag);
   var obTier = getSizeTierFromDims(obBox.l, obBox.w, obBox.h, uwLb+0.5); // +0.5lb for box weight
   var origIsSortable = isSortableDims(Li, Mi, Si, uwLb);
   var obIsSortable = isSortableDims(obBox.l, obBox.w, obBox.h, uwLb+0.5);
@@ -1175,7 +1279,8 @@ function recalc(){
     $('ob_origTier').textContent = origTier;
     $('ob_newSize').textContent = obBox.l.toFixed(1)+'×'+obBox.w.toFixed(1)+'×'+obBox.h.toFixed(1)+' in';
     $('ob_newTier').textContent = obTier;
-    $('ob_boxCode').textContent = obBox.name;
+    $('ob_boxCode').textContent = obBox.name + (obBox.source ? ' ('+obBox.source+')' : '');
+    $('ob_bufferRule').textContent = obBox.rule || '-';
     $('ob_tierJump').textContent = tierJumped ? '⚠️ YES — FBA费率跳档! FBA fee tier jump!' : '✅ No';
     $('ob_tierJump').style.color = tierJumped ? '#991b1b' : '#166534';
     $('ob_annCB').textContent = obCbFee>0 ? '$'+obCbFee.toFixed(2)+'/unit × '+af+' = $'+obAnnCB.toFixed(0)+'/year' : '$0 (Sortable产品无罚款 No chargeback for Sortable)';
@@ -1233,10 +1338,11 @@ function recalc(){
   const actShare=tf>0?af/tf:0;
 
   const isNA=region==='North America (US/CA)';
+  const isNAAmazon = isNA && isAmz;
   // Show old cost card for: Heavy/Bulky with chargeback (not covered by new visual comparison card)
-  const showCost=!isNA&&isAmz&&sipp==='ELIGIBLE 合格'&&(hasChargeback || tierJumped);
-  // Show new visual cost comparison card for: all SIPP-eligible non-NA non-HeavyBulky Amazon products
-  var showCompare = !isNA && isAmz && sipp==='ELIGIBLE 合格' && !isHeavyBulky;
+  const showCost=!isNAAmazon&&isAmz&&sipp==='ELIGIBLE 合格'&&(hasChargeback || tierJumped);
+  // Show new visual cost comparison card for: all SIPP-eligible non-NA-Amazon non-HeavyBulky Amazon products
+  var showCompare = !isNAAmazon && isAmz && sipp==='ELIGIBLE 合格' && !isHeavyBulky;
 
   // Step 6: hide when not Amazon; when Amazon, always allow editing (needed for FBA calc)
   // Only mute the cost-comparison decision for NA (since NA always does SIPP), but inputs stay editable
@@ -1266,7 +1372,7 @@ function recalc(){
   $('sec7').style.display=isAmz?'block':'none';
 
   let ch;
-  if(isNA) ch='← NA默认走SIPP, 成本输入用于FBA费用估算';
+  if(isNAAmazon) ch='← NA默认多走SIPP, 成本输入用于FBA费用估算';
   else if(showCost) ch='← 需要填写成本输入 (用于SIPP成本对比 + FBA费用估算)';
   else if(isAmz && isSortable && !tierJumped) ch='← Sortable产品: 成本输入用于对比升级包装 vs Prep Fee+FBA费差 / Sortable: cost inputs for upgrade vs prep+FBA diff comparison';
   else if(isAmz && sipp!=='ELIGIBLE 合格') ch='← 不符合SIPP, 成本输入用于FBA费用估算 / Not SIPP eligible';
@@ -1277,6 +1383,9 @@ function recalc(){
   // Output
   const isFr=frag.startsWith('Fragile');
   let pkgRoute,testStd,testMethod,minSamp,testProc,decBasis;
+  // Sample count: LED Lamps/LUM default is 3UP+1OB; HUE/WIZ/Other follow BU/project requirement
+  var isLedFamily = (pf==='LED Lamps' || pf==='LED LUM');
+  var defaultSamp = isLedFamily ? 'LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB' : '按BU/项目要求 / Follow BU/project requirement';
 
   if(!isAmz){
     if(dp==='China LUM Online Testing'){
@@ -1297,7 +1406,7 @@ function recalc(){
       pkgRoute='UP 单品包装 (add OB if fragile)\nUP packaging (add overbox if fragile/required)';
       testStd='ISTA 3-Lite Test II (全球在线基线标准)\nISTA 3-Lite Test II (Global Online Baseline)';
       testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
-      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      minSamp=defaultSamp;
       testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
       decBasis='全球在线基线标准 / Global Online Baseline (ISTA 3-Lite)';
     }
@@ -1307,7 +1416,7 @@ function recalc(){
       pkgRoute='Amazon标准履约包装 (SIPP排除项, 无法认证SIOC)\nAmazon standard fulfillment (Excluded from SIPP, cannot certify SIOC)';
       testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
       testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
-      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      minSamp=defaultSamp;
       testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
       decBasis='SIPP排除项 → FBA按产品尺寸计费, 仅损失SIPP折扣 / Excluded → FBA by product dims, only loses SIPP discount';
     } else {
@@ -1315,7 +1424,7 @@ function recalc(){
       pkgRoute='Amazon加外箱 (尺寸过小, 不符合SIPP)\nAmazon Overboxing (Too Small, not SIPP eligible)';
       testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
       testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
-      minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+      minSamp=defaultSamp;
       testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
       decBasis='尺寸过小不符合SIPP → ISTA 3-Lite 内部基线 / Too Small → internal ISTA 3-Lite baseline';
     }
@@ -1328,7 +1437,7 @@ function recalc(){
     testProc='按 ISTA 6-Amazon SIOC Type B-F 要求执行 / Per ISTA 6-Amazon SIOC Type B-F requirement';
     decBasis='大件/超重 Heavy/Bulky (>50lb 或 Girth>130" 或 side≥59/33/33) → SIPP Type B-F';
   } else {
-    if(isNA){
+    if(isNAAmazon){
       pkgRoute=isFr?'重新设计SIPP包装 (易碎)\nRedesign to SIPP-ready (fragile)':'SIPP已就绪 — Self-Drop Test 或 ISTA 6A Type A\nSIPP Ready — Self-Drop Test or ISTA 6A Type A';
       testStd=isFr?'ISTA 6-Amazon.com SIOC Type A (仅限第三方认证实验室)\nISTA 6A Type A — Certified Lab ONLY':'Amazon自测跌落 或 ISTA 6A Type A\nAmazon Rigid Self-Drop Test or ISTA 6-Amazon.com SIOC Type A';
       testMethod=isFr?'第三方认证实验室 (仅限)\nCertified Lab ONLY':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
@@ -1350,7 +1459,7 @@ function recalc(){
           pkgRoute='✅ 维持现有包装即可 (Sortable, 无罚款, Overbox不跳档)\nKeep current packaging (Sortable, no chargeback, no tier jump)';
           testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
           testMethod='内部试验 — Drop + Vibration\nInternal — Drop + Vibration';
-          minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+          minSamp=defaultSamp;
           testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
           decBasis='Sortable产品无罚款风险, Overbox后仍为Sortable不跳档\nSortable — no chargeback, overbox stays Sortable\n(可选: 如申请SIPP可获得少量FBA折扣$0.04-$0.23/unit · Optional: SIPP provides small FBA discount only)';
         }
@@ -1367,7 +1476,7 @@ function recalc(){
           pkgRoute='维持现有包装 (接受Overbox额外成本)\nKeep current packaging + accept overbox costs';
           testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
           testMethod='内部试验 — Drop + Vibration (维持包装)\nInternal — Drop + Vibration (keep current packaging)';
-          minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+          minSamp=defaultSamp;
           testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
           decBasis='Sortable但Overbox后变Non-Sortable, 接受额外成本\nSortable but Overbox → Non-Sortable, accept overbox costs';
         }
@@ -1375,7 +1484,7 @@ function recalc(){
         pkgRoute='维持现有包装+Amazon Repack (接受罚款+Overbox成本)\nKeep current packaging + Amazon Repack (accept chargeback + overbox costs)';
         testStd='ISTA 3-Lite Test II (内部基线标准)\nISTA 3-Lite Test II (internal baseline)';
         testMethod='内部试验 — Drop + Vibration (维持包装)\nInternal — Drop + Vibration (keep current packaging)';
-        minSamp='LED默认: 3 UP + 1 OB / LED default: 3 UP + 1 OB';
+        minSamp=defaultSamp;
         testProc='Drop + Vibration, 按BU要求执行 Follow BU requirement';
         decBasis='维持包装+接受全部额外成本 / Keep packaging + pay all extra costs';
       } else {
@@ -1390,7 +1499,7 @@ function recalc(){
   }
 
   let costDisp;
-  if(isNA) costDisp='N/A — NA直接走SIPP测试,无需成本对比 / NA always SIPP, no cost comparison needed';
+  if(isNAAmazon) costDisp='N/A — NA Amazon路径默认走SIPP测试,无需成本对比 / NA Amazon path usually follows SIPP, no cost comparison needed';
   else if(!isAmz) costDisp='N/A — 非Amazon渠道,无SIPP路径 / Non-Amazon channel, no SIPP path';
   else if(sipp!=='ELIGIBLE 合格') costDisp='N/A — 不符合SIPP / Not SIPP eligible';
   else costDisp=costDec;
@@ -1451,7 +1560,7 @@ docsHtml += `
 $('r_docs').innerHTML = docsHtml;
 
   // ─── Build Flowchart ───
-  buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNA,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth);
+  buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNAAmazon,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth);
 
   if(showCompare){
     $('costCard').style.display='none';
@@ -1648,7 +1757,7 @@ $('r_docs').innerHTML = docsHtml;
   var isNotEligible = (sipp!=='ELIGIBLE 合格' && !isHeavyBulky);
   var isExcludedOnly = isNotEligible && !isTooSmall && (exclResult==='EXCLUDED 含排除项');
   var isTooSmallNotEligible = isNotEligible && isTooSmall;
-  var isKeepMode = (!isNotEligible && !isNA && (costDec.indexOf('KEEP')>=0 || costDec.indexOf('accept')>=0));
+  var isKeepMode = (!isNotEligible && !isNAAmazon && (costDec.indexOf('KEEP')>=0 || costDec.indexOf('accept')>=0));
 
   if(isTooSmallNotEligible){
     // TOO SMALL: Amazon must overbox — FBA based on overbox dimensions
@@ -1783,8 +1892,9 @@ $('r_docs').innerHTML = docsHtml;
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 
-function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNA,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth){
+function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costDec,isFr,isNAAmazon,isTooSmall,isHeavyBulky,isSortable,hasChargeback,dt,girth){
   var fc=$('flowchart');
+  var fcSampText = (pf==='LED Lamps'||pf==='LED LUM') ? '3UP+1OB' : 'Per BU/project';
   // Clear existing nodes
   while(fc.firstChild) fc.removeChild(fc.firstChild);
 
@@ -1823,7 +1933,7 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
     if(pf==='LED LUM'){
       addNode('China LUM Online Testing\nISTA 6 FedEx + ISTA 6 Amazon\nSamples: 3 sets · Internal test','fc-end');
     } else {
-      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: '+fcSampText+' · Internal · UP pack','fc-end');
     }
   } else if(region==='Other local/3rd party/customer'){
     addNode('Customer specified standard?\n'+cust,'fc-decision');
@@ -1831,15 +1941,15 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
     if(cust==='Yes'){
       addNode('Customer Specified Standard\nPer customer requirement','fc-end');
     } else {
-      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+      addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: '+fcSampText+' · Internal · UP pack','fc-end');
     }
   } else if(!isAmz){
     addNode('Sold on Amazon: No','fc-decision');
     addArrow('Non-Amazon');
-    addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: 3UP+1OB · Internal · UP pack','fc-end');
+    addNode('Global Online Baseline\nISTA 3-Lite Test II\nSamples: '+fcSampText+' · Internal · UP pack','fc-end');
   } else {
-    if(isNA){
-      addNode('NA default → Amazon SIPP Path','fc-process');
+    if(isNAAmazon){
+      addNode('NA Amazon selected → Amazon SIPP Path','fc-process');
     } else {
       addNode('Sold on Amazon: Yes → Amazon SIPP Path','fc-process');
     }
@@ -1855,7 +1965,7 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
       addNode('SIPP Category: '+dt+'\nGirth: '+girth.toFixed(0)+' in','fc-decision');
       if(isTooSmall){
         addArrow('Too Small');
-        addNode('Amazon Overboxing (Not SIPP eligible)\nISTA 3-Lite Test II (internal baseline)\nSamples: 3UP+1OB · Drop+Vibration','fc-end');
+        addNode('Amazon Overboxing (Not SIPP eligible)\nISTA 3-Lite Test II (internal baseline)\nSamples: '+fcSampText+' · Drop+Vibration','fc-end');
       } else if(isHeavyBulky){
         addArrow('Heavy/Bulky');
         addNode('Fragile: '+(isFr?'Yes':'No'),'fc-decision');
@@ -1865,7 +1975,7 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
         // Sortable or Non-Sortable
         addArrow(isSortable?'Sortable (no chargeback)':'Non-Sortable (chargeback applies)');
 
-        if(isNA){
+        if(isNAAmazon){
           addNode('NA always SIPP\nFragile: '+(isFr?'Yes':'No'),'fc-decision');
           addArrow(isFr?'Fragile':'Non-fragile');
           if(isFr){
@@ -1885,14 +1995,14 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
             }
           } else {
             addArrow('KEEP (upgrade not justified)');
-            addNode('Keep Current Packaging\nISTA 3-Lite Test II · Internal · 3UP+1OB\nSIPP optional (small FBA discount only)','fc-end');
+            addNode('Keep Current Packaging\nISTA 3-Lite Test II · Internal · '+fcSampText+'\nSIPP optional (small FBA discount only)','fc-end');
           }
         } else {
           // Non-Sortable with chargeback — cost comparison
           addNode('Cost Comparison\nUpgrade cost vs Chargeback cost','fc-decision');
           addArrow(costDec==='UPGRADE (SIPP/ISTA6-A)'?'UPGRADE':'KEEP');
           if(costDec==='KEEP baseline + pay chargeback'){
-            addNode('KEEP baseline + pay chargeback\nISTA 3-Lite Test II · Internal\nSamples: 3UP+1OB','fc-end');
+            addNode('KEEP baseline + pay chargeback\nISTA 3-Lite Test II · Internal\nSamples: '+fcSampText+'','fc-end');
           } else {
             addNode('UPGRADE to SIPP\nFragile: '+(isFr?'Yes':'No'),'fc-decision');
             addArrow(isFr?'Fragile':'Non-fragile');
@@ -1909,10 +2019,77 @@ function buildFlowchart(region,pf,amz,cust,dp,isAmz,sipp,exclResult,reason,costD
 }
 
 // ─── Channel Switching ───
+var currentBrand = 'signify'; // 'signify' or 'thirdparty'
+var currentTpReq = 'no'; // 'yes' or 'no' — does third-party brand have its own test req?
 var currentChannel = 'online';
+
+function switchBrand(brand){
+  currentBrand = brand;
+  if(brand==='signify'){
+    // Signify own brand: show channel selection & normal flow
+    $('btnSignify').style.background='#059669'; $('btnSignify').style.borderColor='#059669'; $('btnSignify').style.color='#fff';
+    $('btnThirdParty').style.background='#fff'; $('btnThirdParty').style.borderColor='var(--slate-300)'; $('btnThirdParty').style.color='var(--slate-600)';
+    $('tpSubQuestion').style.display='none';
+    $('thirdPartyResult').style.display='none';
+    $('sec0').style.display='block';
+    showNormalFlow();
+    $('hdr-path').textContent = currentChannel==='online' ? 'Global Online Baseline' : 'Global Offline Baseline';
+    if(currentChannel==='online') recalc(); else offlineCalc();
+  } else {
+    // Third-party brand: show sub-question
+    $('btnThirdParty').style.background='#b45309'; $('btnThirdParty').style.borderColor='#b45309'; $('btnThirdParty').style.color='#fff';
+    $('btnSignify').style.background='#fff'; $('btnSignify').style.borderColor='var(--slate-300)'; $('btnSignify').style.color='var(--slate-600)';
+    $('tpSubQuestion').style.display='block';
+    // Reset sub-buttons to unselected
+    $('btnTpHasReq').style.background='#fff'; $('btnTpHasReq').style.borderColor='var(--slate-300)'; $('btnTpHasReq').style.color='var(--slate-600)';
+    $('btnTpNoReq').style.background='#fff'; $('btnTpNoReq').style.borderColor='var(--slate-300)'; $('btnTpNoReq').style.color='var(--slate-600)';
+    // Hide everything until sub-question is answered
+    $('sec0').style.display='none';
+    $('onlinePanel').style.display='none';
+    $('offlinePanel').style.display='none';
+    $('thirdPartyResult').style.display='none';
+    $('hdr-path').textContent='Third-party / Customer Brand — 请选择 Please select';
+  }
+}
+
+function switchTpReq(hasReq){
+  currentTpReq = hasReq;
+  if(hasReq==='yes'){
+    // Third-party brand HAS own requirement → show dedicated result, hide normal flow
+    $('btnTpHasReq').style.background='#b45309'; $('btnTpHasReq').style.borderColor='#b45309'; $('btnTpHasReq').style.color='#fff';
+    $('btnTpNoReq').style.background='#fff'; $('btnTpNoReq').style.borderColor='var(--slate-300)'; $('btnTpNoReq').style.color='var(--slate-600)';
+    $('thirdPartyResult').style.display='block';
+    $('sec0').style.display='none';
+    $('onlinePanel').style.display='none';
+    $('offlinePanel').style.display='none';
+    $('hdr-path').textContent='第三方品牌自有标准 Third-party Brand Own Standard';
+  } else {
+    // Third-party brand has NO requirement → fall back to Signify flow
+    $('btnTpNoReq').style.background='#059669'; $('btnTpNoReq').style.borderColor='#059669'; $('btnTpNoReq').style.color='#fff';
+    $('btnTpHasReq').style.background='#fff'; $('btnTpHasReq').style.borderColor='var(--slate-300)'; $('btnTpHasReq').style.color='var(--slate-600)';
+    $('thirdPartyResult').style.display='none';
+    $('sec0').style.display='block';
+    showNormalFlow();
+    $('hdr-path').textContent = currentChannel==='online' ? 'Global Online Baseline (Third-party fallback)' : 'Global Offline Baseline (Third-party fallback)';
+    if(currentChannel==='online'){ recalc(); setTimeout(recalc, 0); } else { offlineCalc(); setTimeout(offlineCalc, 0); }
+  }
+}
+
+function showNormalFlow(){
+  if(currentChannel==='online'){
+    $('onlinePanel').style.display='block';
+    $('offlinePanel').style.display='none';
+  } else {
+    $('onlinePanel').style.display='none';
+    $('offlinePanel').style.display='block';
+  }
+}
 
 function switchChannel(ch){
   currentChannel = ch;
+  $('thirdPartyResult').style.display='none'; // always hide when switching channel
+  var isTpFallback = (currentBrand==='thirdparty' && currentTpReq==='no');
+  var pathSuffix = isTpFallback ? ' (Third-party fallback)' : '';
   if(ch==='online'){
     $('onlinePanel').style.display='block';
     $('offlinePanel').style.display='none';
@@ -1922,9 +2099,10 @@ function switchChannel(ch){
     $('btnOffline').style.background='#fff';
     $('btnOffline').style.borderColor='var(--slate-300)';
     $('btnOffline').style.color='var(--slate-600)';
-    $('hdr-path').textContent='Global Online Baseline';
+    $('hdr-path').textContent='Global Online Baseline' + pathSuffix;
     $('mainFooter').textContent='Based on Signify Online Packaging Test Guideline Draft V10 · Dim Divisor=139, Rounding=0.5lb · Amazon FBA 2026 Non-Peak Rates · Overbox Estimator: adaptive padding 1"-2" per side, community box database';
     recalc();
+    setTimeout(recalc, 0);
   } else {
     $('onlinePanel').style.display='none';
     $('offlinePanel').style.display='block';
@@ -1934,39 +2112,55 @@ function switchChannel(ch){
     $('btnOnline').style.background='#fff';
     $('btnOnline').style.borderColor='var(--slate-300)';
     $('btnOnline').style.color='var(--slate-600)';
-    $('hdr-path').textContent='Offline Baseline';
+    $('hdr-path').textContent='Offline Baseline' + pathSuffix;
     $('mainFooter').textContent='Based on Signify Consumer Packaging Offline Packaging Test Guideline 20260128 · ISTA 3-Lite / UND1400';
     offlineCalc();
+    setTimeout(offlineCalc, 0);
   }
 }
 
 function offlineCalc(){
+  var projType = val('off_projType');
   var pf = val('off_productFamily');
   var packEU = val('off_packEurope');
   var region = val('off_salesRegion');
-  var mfg = val('off_mfgRegion');
-  var custStd = val('off_custStd');
-  var prodType = val('off_prodType');
+  var storageEnv = val('off_storageEnv');
+  var storageTime = val('off_storageTime');
+  var isTpFallback = (currentBrand==='thirdparty' && currentTpReq==='no');
 
-  var isAPR = mfg.indexOf('APR') >= 0;
+  var envMediumRisk = storageEnv.indexOf('Seasonal hot / humid') >= 0;
+  var envHighRisk = storageEnv.indexOf('Non-controlled warehouse / long transit') >= 0;
+  var timeShort = storageTime.indexOf('1–3 months') >= 0;
+  var timeNormal = storageTime.indexOf('3–6 months') >= 0;
+  var timeMidLong = storageTime.indexOf('6–12 months') >= 0;
+  var timeLong = storageTime.indexOf('&gt;12 months') >= 0 || storageTime.indexOf('>12 months') >= 0;
   var isPackedEU = packEU.indexOf('Yes') >= 0;
   var isEuropeRegion = region.indexOf('Europe') >= 0;
-  var isSpecial = prodType.indexOf('Special') >= 0;
-  var isCustStd = custStd.indexOf('Yes') >= 0;
+  var isSpecial = projType.indexOf('Special') >= 0;
+  var isCustStd = projType.indexOf('Customer') >= 0;
 
   // Header path
-  $('hdr-path').textContent = 'Global Offline Baseline';
+  $('hdr-path').textContent = isTpFallback ? 'Global Offline Baseline (Third-party fallback)' : 'Global Offline Baseline';
 
-  // Dynamic field visibility
-  if (pf === 'LED Lamps') {
-    $('off_packField').style.display = 'block';
-    $('off_regionField').style.display = 'none';
-  } else if (pf === 'LED LUM') {
+  // Dynamic field visibility based on project type
+  if (isCustStd || isSpecial) {
+    // Customer standard or Special project: hide product family and sub-fields
+    $('off_pfField').style.display = 'none';
     $('off_packField').style.display = 'none';
-    $('off_regionField').style.display = 'block';
+    $('off_regionField').style.display = 'none';
   } else {
-    $('off_packField').style.display = 'none';
-    $('off_regionField').style.display = 'none';
+    // Standard Consumer: show product family and relevant sub-fields
+    $('off_pfField').style.display = 'block';
+    if (pf === 'LED Lamps') {
+      $('off_packField').style.display = 'block';
+      $('off_regionField').style.display = 'none';
+    } else if (pf === 'LED LUM') {
+      $('off_packField').style.display = 'none';
+      $('off_regionField').style.display = 'block';
+    } else {
+      $('off_packField').style.display = 'none';
+      $('off_regionField').style.display = 'none';
+    }
   }
 
   var testStd, testMethod, testBasis, minSamp, decBasis;
@@ -1976,7 +2170,7 @@ function offlineCalc(){
     testMethod = '按客户要求\nPer customer requirement';
     testBasis = 'OB (外箱测试)\nOuter Box based testing';
     minSamp = '按客户/BU要求\nPer customer/BU requirement';
-    decBasis = '客户/渠道指定标准优先 / Customer/channel standard prevails';
+    decBasis = (isTpFallback ? '第三方/客户品牌无特定包装试验要求 → 按内部线下逻辑执行；客户/渠道指定标准优先 / No specific third-party requirement → follow internal offline logic; customer/channel standard prevails' : '客户/渠道指定标准优先 / Customer/channel standard prevails');
   } else if (isSpecial) {
     testStd = '按项目团队定义 (参考相似产品类型)\nDefined by project team (map to similar product type)';
     testMethod = '根据实际运输条件确定\nBased on actual transport conditions';
@@ -2019,24 +2213,40 @@ function offlineCalc(){
     decBasis = 'Other Consumer → ISTA 3-Lite (按相似产品映射 mapped to similar product type)';
   }
 
-  // Pre-conditioning based on manufacturing region
-  var precon, predur;
-  if (isAPR) {
-    precon = '高湿预处理 (APR制造产品)\nHigh-humidity pre-conditioning (APR manufactured)\n温度 Temperature: 38°C · 相对湿度 Relative Humidity: 85%';
-    predur = '24 hours (APR高湿标准 APR high-humidity standard)';
+  // Pre-conditioning based on exposure risk × storage duration
+  var precon, predur, preAdvice, needEnvPrecondition;
+  needEnvPrecondition = envHighRisk || (envMediumRisk && !timeShort) || (!envMediumRisk && !envHighRisk && (timeMidLong || timeLong));
+
+  if (envHighRisk) {
+    precon = '环境预处理 Environmental pre-conditioning\n建议条件 Recommended condition: 38°C / 85% RH';
+    predur = (timeMidLong || timeLong) ? '48–72 hours (较高风险建议加强 / enhanced for elevated risk)' : '24–48 hours';
+    preAdvice = '✅ Strongly recommended. 建议增加包装环境预处理试验；适用于非受控仓储、长途运输或较高湿热暴露可能的项目。\nRecommend adding packaging environmental pre-conditioning test for projects with non-controlled storage, long transit or likely hot/humid exposure.';
+  } else if (envMediumRisk && (timeNormal || timeMidLong || timeLong)) {
+    precon = '环境预处理 Environmental pre-conditioning\n建议条件 Recommended condition: 38°C / 85% RH';
+    predur = (timeMidLong || timeLong) ? '48 hours' : '24–48 hours';
+    preAdvice = '⚠️ Recommended. 建议增加包装环境预处理试验，用于验证包装在季节性高温高湿及较长储存周期下的稳定性。\nRecommend adding packaging environmental pre-conditioning test to verify packaging stability under seasonal hot/humid exposure and extended storage duration.';
+  } else if (envMediumRisk && timeShort) {
+    precon = '标准环境预处理 Standard ambient pre-conditioning\n温度 Temperature: 20–23°C · 相对湿度 Relative Humidity: 40–65%';
+    predur = 'Regular 24–48 hours';
+    preAdvice = '可结合项目风险判断是否补充环境预处理试验。短期储存下通常可先采用标准环境预处理。\nFor short storage duration, standard ambient pre-conditioning is normally acceptable; add environmental pre-conditioning based on project risk if needed.';
+  } else if ((!envMediumRisk && !envHighRisk) && (timeMidLong || timeLong)) {
+    precon = '标准环境预处理 Standard ambient pre-conditioning\n温度 Temperature: 20–23°C · 相对湿度 Relative Humidity: 40–65%';
+    predur = timeLong ? '48 hours (长期储存建议复核 / review recommended for long storage)' : 'Regular 24–48 hours';
+    preAdvice = '常规受控环境下可先采用标准环境预处理；当储存时间达到6个月以上时，建议根据材料敏感性与仓储条件评估是否补充环境预处理试验。\nUnder normal controlled storage, standard ambient pre-conditioning is acceptable; when storage duration exceeds 6 months, evaluate whether additional environmental pre-conditioning is needed based on material sensitivity and storage conditions.';
   } else {
     precon = '标准环境预处理 Standard ambient pre-conditioning\n温度 Temperature: 20–23°C · 相对湿度 Relative Humidity: 40–65%';
-    predur = '标准 Regular 48 hours (最少 Min. 24 hours)';
+    predur = 'Regular 24–48 hours';
+    preAdvice = '常规项目可采用标准环境预处理。\nStandard ambient pre-conditioning is acceptable for normal projects.';
   }
 
   // Compression test
   var compress;
-  if (isAPR && pf === 'Other Consumer Products (其他消费品)') {
-    compress = '✅ APR制造的其他消费品必须增加压缩试验\nMandatory for APR other consumer products\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
-  } else if (isAPR) {
-    compress = '⚠️ APR制造建议增加压缩试验\nAPR manufactured — Recommend adding quick compression test\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+  if ((pf === 'Other Consumer Products (其他消费品)' && (timeMidLong || timeLong)) || envHighRisk) {
+    compress = '✅ 建议增加压缩试验\nRecommend adding compression test\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+  } else if (needEnvPrecondition) {
+    compress = '⚠️ 可考虑增加压缩试验\nConsider adding compression test\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
   } else {
-    compress = '非APR制造可选，根据工程判断和风险评估决定\nOptional for non-APR — based on engineering judgement & risk assessment\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
+    compress = '根据工程判断和风险评估决定\nOptional — based on engineering judgement & risk assessment\n标准: UN-D 1400 (2011) — X COMPRESSION TEST\n文件: UN-D 1400 (2011).pdf';
   }
 
   var roll = '可选 — 适用于有滚动/旋转冲击风险的灯具产品\nOptional — For luminaires with rolling/rotational impact risk\n标准: UN-D 1400 (2011) — IV ROLLING TEST\n文件: UN-D 1400 (2011).pdf';
@@ -2051,10 +2261,21 @@ function offlineCalc(){
   notes += 'Note 1: 特殊项目或第三方品牌项目，最终试验标准由项目团队定义。<br>For special projects or projects using customer / private label or other third-party brands, the final test standard shall be defined by the project team.<br><br>';
   notes += 'Note 2: 未覆盖的消费品按重量、尺寸、易碎性映射至相似产品类型。<br>For Consumer products not covered in the above categories, the test standard shall be selected by mapping to a similar product type based on weight, dimensions and fragility.<br><br>';
   notes += 'Note 3: 线下产品运输包装测试基于外箱(OB)进行。<br>Offline product transport packaging tests are conducted based on OB (outer box).<br><br>';
-  notes += 'Note 4: 样品数量遵循BU质量要求。<br>Test sample quantities shall follow the relevant BU quality requirements.';
+  notes += 'Note 4: 样品数量遵循BU质量要求。<br>Test sample quantities shall follow the relevant BU quality requirements.<br><br>';
+  notes += 'Note 5: 环境暴露风险是环境预处理判断的主因，储存时间为风险放大因素；如存在季节性高温高湿、非受控仓储、长途运输或较长储存周期，建议评估是否补充包装环境预处理试验。<br>Exposure risk is the primary factor for environmental pre-conditioning, while storage duration acts as a risk multiplier; where seasonal hot/humid exposure, non-controlled storage, long transit or extended storage duration is expected, evaluate whether additional environmental pre-conditioning is needed.';
   if (isCustStd) {
     notes = '<b>⚠️ 客户/渠道指定标准优先于本指南要求。</b><br><b>Where offline shipments follow a channel or customer standard that is more stringent than this Guideline, the higher requirement shall prevail.</b><br><br>' + notes;
+    if (isTpFallback) {
+      notes = '<b>第三方/客户品牌未提供自身包装试验要求，因此按Signify内部线下逻辑执行；如客户/渠道后续给出更高要求，则以更高要求为准。</b><br><b>No third-party packaging test requirement was provided, so the Signify internal offline logic is applied; if the customer/channel later specifies a more stringent requirement, the higher requirement shall prevail.</b><br><br>' + notes;
+    }
   }
+
+  // Safety fallback: ensure third-party fallback paths always produce visible offline results
+  testStd = testStd || 'Per internal offline logic';
+  testMethod = testMethod || 'Based on internal offline requirement';
+  testBasis = testBasis || 'OB (Outer Box based testing)';
+  minSamp = minSamp || 'Per BU quality requirement';
+  decBasis = decBasis || (isTpFallback ? 'Third-party fallback to internal offline logic' : 'Internal offline logic');
 
   // Populate result UI
   $('off_r_std').textContent = testStd;
@@ -2064,6 +2285,7 @@ function offlineCalc(){
   $('off_r_dec').textContent = decBasis;
   $('off_r_precon').textContent = precon;
   $('off_r_predur').textContent = predur;
+  $('off_r_preAdvice').textContent = preAdvice;
   $('off_r_core').textContent = testStd.split('\n')[0];
   $('off_r_compress').textContent = compress;
   $('off_r_roll').textContent = roll;
@@ -2133,15 +2355,18 @@ $('off_r_docs').innerHTML = docsHtml;
 
   addN('Start: Offline Packaging\nLED Lamps / LED LUM / HUE / WiZ','fc-start');
   addA();
-  addN('Product Category?','fc-decision');
+  addN('Project / Channel Type?','fc-decision');
 
   if (isCustStd) {
-    addA('Customer standard');
+    addA('Customer/Channel Standard');
     addN('Per customer/channel specified standard','fc-end');
   } else if (isSpecial) {
     addA('Special Project');
     addN('Defined by project team\n(map to similar product type)','fc-end');
-  } else if (pf === 'LED Lamps') {
+  } else {
+    addA('Standard Consumer');
+    addN('Product Family?','fc-decision');
+    if (pf === 'LED Lamps') {
     addA('LED Lamps');
     addN('Packed in Europe offline packaging?','fc-decision');
     addA(isPackedEU ? 'Yes' : 'No');
@@ -2166,6 +2391,7 @@ $('off_r_docs').innerHTML = docsHtml;
     addA('Other Consumer');
     addN('Map to similar product type\nby weight / dimensions / fragility\n\nTest standard:\nISTA 3-Lite (reference)','fc-end');
   }
+  } // end Standard Consumer
 }
 function pdfRow(label, value){
   return `<tr>
@@ -2184,7 +2410,19 @@ function generatePdfReport(){
   let calcRows = '';
   let docsRows = '';
 
-  if(currentChannel === 'online'){
+  // Brand info
+  var brandLabel = currentBrand==='signify' ? 'Signify Own Brand (自有品牌)' : 'Third-party / Customer Brand (第三方/客户品牌)';
+  inputRows += pdfRow('Brand Type', brandLabel);
+
+  if(currentBrand==='thirdparty' && currentTpReq==='yes'){
+    // Third-party brand with own requirement
+    inputRows += pdfRow('Third-party Requirement', 'Yes — Has own test requirement');
+    resultRows += pdfRow('Test Standard', 'Per third-party / customer brand requirement');
+    resultRows += pdfRow('Test Method', 'Per customer/brand requirement');
+    resultRows += pdfRow('Min. Samples', 'Per customer/brand requirement');
+    resultRows += pdfRow('Decision Basis', 'Third-party brand has its own test requirement, which shall prevail over this Guideline.');
+  } else if(currentChannel === 'online'){
+    if(currentBrand==='thirdparty') inputRows += pdfRow('Third-party Requirement', 'No — Follow Signify guideline');
     inputRows += pdfRow('Sales Channel', 'Online');
     inputRows += pdfRow('Sales Region', val('region'));
     inputRows += pdfRow('Product Family', val('productFamily'));
@@ -2224,13 +2462,15 @@ function generatePdfReport(){
 
     docsRows = $('r_docs').innerHTML;
   } else {
+    if(currentBrand==='thirdparty') inputRows += pdfRow('Third-party Requirement', 'No — Follow Signify guideline');
     inputRows += pdfRow('Sales Channel', 'Offline');
-    inputRows += pdfRow('Product Family', val('off_productFamily'));
+    inputRows += pdfRow('Project/Channel Type', val('off_projType'));
+    inputRows += pdfRow('Product Family', $('off_pfField').style.display !== 'none' ? val('off_productFamily') : 'N/A');
     inputRows += pdfRow('Packed in Europe', $('off_packField').style.display !== 'none' ? val('off_packEurope') : 'N/A');
     inputRows += pdfRow('Sales/Shipping Region', $('off_regionField').style.display !== 'none' ? val('off_salesRegion') : 'N/A');
-    inputRows += pdfRow('Customer/Channel Standard', val('off_custStd'));
-    inputRows += pdfRow('Product Type', val('off_prodType'));
-    inputRows += pdfRow('Manufacturing Region', val('off_mfgRegion'));
+    inputRows += pdfRow('Storage Environment Risk', val('off_storageEnv'));
+    inputRows += pdfRow('Expected Storage Duration', val('off_storageTime'));
+
 
     dimRows += pdfRow('Package Size / Weight', 'Offline module currently does not capture dimensions/weight');
     dimRows += pdfRow('Note', 'Add offline dimension fields later if needed');
@@ -2243,6 +2483,7 @@ function generatePdfReport(){
 
     calcRows += pdfRow('Pre-conditioning', $('off_r_precon').textContent);
     calcRows += pdfRow('Pre-conditioning Duration', $('off_r_predur').textContent);
+    calcRows += pdfRow('Pre-conditioning Recommendation', $('off_r_preAdvice').textContent);
     calcRows += pdfRow('Core Test', $('off_r_core').textContent);
     calcRows += pdfRow('Compression Test', $('off_r_compress').textContent);
     calcRows += pdfRow('Rolling Test', $('off_r_roll').textContent);
