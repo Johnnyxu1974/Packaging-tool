@@ -198,6 +198,50 @@
   .fc-arrow { width:2px; height:16px; background:rgba(255,255,255,0.2); }
   .fc-label { font-size:10px; color:rgba(255,255,255,0.4); font-weight:500; padding:2px 0; }
 
+
+  /* Step layout & collapsible details */
+  .workflow-strip {
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin:0 0 18px;
+  }
+  .workflow-card {
+    background:#fff; border:1px solid var(--slate-200); border-radius:14px; padding:14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .workflow-card .step-kicker { font-size:11px; font-weight:800; color:var(--blue-700); letter-spacing:0.4px; text-transform:uppercase; }
+  .workflow-card .step-main { margin-top:4px; font-size:14px; font-weight:800; color:var(--slate-900); }
+  .workflow-card .step-sub { margin-top:4px; font-size:11px; line-height:1.5; color:var(--slate-500); }
+  @media (max-width:700px){ .workflow-strip{ grid-template-columns:1fr; } }
+
+  .summary-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;
+  }
+  .summary-card-main {
+    background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+    border: 1px solid rgba(255,255,255,0.14); border-radius:14px; padding:18px 20px; margin-bottom:16px;
+  }
+  .summary-title { color:#93c5fd; font-size:13px; font-weight:800; margin-bottom:12px; letter-spacing:0.2px; }
+  .summary-item {
+    background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px; padding:12px 14px;
+  }
+  .summary-item .k { font-size:11px; color:rgba(255,255,255,0.55); font-weight:700; margin-bottom:6px; }
+  .summary-item .v { font-size:13px; color:#fff; font-weight:700; line-height:1.5; white-space:pre-line; }
+  .summary-item.full { grid-column:1 / -1; }
+  .summary-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
+  .summary-note { font-size:11px; color:rgba(255,255,255,0.55); }
+  .toggle-btn {
+    border:none; border-radius:10px; padding:10px 14px; cursor:pointer; font-family:var(--font);
+    background:#dbeafe; color:#1d4ed8; font-size:12px; font-weight:800;
+  }
+  .details-block { display:none; }
+  .details-block.show { display:block; }
+  .assumption-box {
+    background:#f3f4f6; border:1px solid #d1d5db; border-radius:12px; padding:16px 18px; margin:16px 0 18px;
+  }
+  .assumption-box h3 { font-size:14px; font-weight:800; color:#374151; margin-bottom:10px; }
+  .assumption-box .assump-item { font-size:12px; color:#4b5563; line-height:1.7; padding:6px 0; border-bottom:1px solid #e5e7eb; }
+  .assumption-box .assump-item:last-child { border-bottom:none; }
+
   /* Print */
 @media print {
   @page {
@@ -260,6 +304,24 @@
     <div class="path-banner">
       <span class="lbl">当前决策路径 Current Decision Path</span>
       <span class="val" id="hdr-path">—</span>
+    </div>
+  </div>
+
+  <div class="workflow-strip">
+    <div class="workflow-card">
+      <div class="step-kicker">Step 1</div>
+      <div class="step-main">Input Conditions 输入条件</div>
+      <div class="step-sub">选择品牌、渠道、地区、产品、包装尺寸与必要输入项。Select brand, channel, region, product and package inputs.</div>
+    </div>
+    <div class="workflow-card">
+      <div class="step-kicker">Step 2</div>
+      <div class="step-main">Main Decision Result 主结论</div>
+      <div class="step-sub">系统自动输出推荐测试路径、标准、SIPP建议与成本结论。Auto-generated route, standard, SIPP recommendation and cost decision.</div>
+    </div>
+    <div class="workflow-card">
+      <div class="step-kicker">Step 3</div>
+      <div class="step-main">Detailed Analysis 详细分析</div>
+      <div class="step-sub">按需展开流程图、FBA影响、参考文件和内部估算假设。Expand flowchart, FBA impact, reference docs and assumptions only when needed.</div>
     </div>
   </div>
 
@@ -493,10 +555,41 @@
   <div class="result-panel">
     <div class="result-head"><span style="font-size:22px">🎯</span><h2>包装试验路径选择结果 PACKAGING TEST PATH RESULT</h2></div>
 
-    <!-- Dynamic Flowchart -->
-    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
-      <div id="flowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+    <div class="summary-card-main">
+      <div class="summary-title">Step 2 · Main Conclusion 主结论</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="k">Recommended Test Path 推荐测试路径</div>
+          <div class="v" id="sum_path">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="k">Recommended Standard 推荐标准</div>
+          <div class="v" id="sum_std">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="k">SIPP Recommendation 是否建议SIPP</div>
+          <div class="v" id="sum_sipp">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="k">Cost Conclusion 成本结论</div>
+          <div class="v" id="sum_cost">—</div>
+        </div>
+        <div class="summary-item full">
+          <div class="k">Decision Basis 判断依据</div>
+          <div class="v" id="sum_basis">—</div>
+        </div>
+      </div>
+      <div class="summary-actions">
+        <div class="summary-note">Step 3 details are hidden by default to keep the homepage lighter. 默认收起详细分析，首页更轻。</div>
+        <button class="toggle-btn" type="button" onclick="toggleStep3Online(this)">Show Step 3 Details 展开详细分析</button>
+      </div>
+    </div>
+
+    <div id="onlineStep3Details" class="details-block">
+      <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
+        <div id="flowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+      </div>
     </div>
 
     <div class="result-card">
@@ -508,6 +601,7 @@
       <div class="result-row"><span class="lbl">试验程序 Test Procedure</span><span class="val" id="r_proc"></span></div>
       <div class="result-row" style="border-bottom:none"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="r_basis"></span></div>
     </div>
+    <div id="onlineResultDetails" class="details-block">
     <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
       <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.7);">
         📎 Referenced Test Documents
@@ -578,10 +672,20 @@
 
     <!-- N/A cost display -->
     <div class="na-cost" id="naCost" style="display:none"><span id="r_naText"></span></div>
+    </div>
+  </div>
+
+
+  <div id="assumptionBox" class="assumption-box details-block">
+    <h3>Internal Estimation Assumptions / 内部估算假设</h3>
+    <div class="assump-item"><b>Improvement % 包装改善比例:</b> Small = 10%, Medium = 25%, Large = 50%; used only as internal estimation inputs for SIPP-ready pack upgrade.</div>
+    <div class="assump-item"><b>Test fee 测试费:</b> default lab/certification value is $800 for fragile products; non-fragile self-drop can be $0 when internal self-test is acceptable.</div>
+    <div class="assump-item"><b>Overbox buffer logic 外箱缓冲逻辑:</b> adaptive padding model with default/slender/fragile/heavy presets; used for worst-case overbox size estimation only.</div>
+    <div class="assump-item"><b>FBA rate basis FBA费率依据:</b> estimated from 2026 US non-peak FBA rate logic already embedded in the system; used for internal comparison rather than exact settlement.</div>
   </div>
 
   <!-- STEP 7: FBA Cost Estimator -->
-  <div class="section" id="sec7">
+  <div class="section details-block" id="sec7">
     <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#f59e0b,#d97706)">7</div><span class="section-title" id="sec7_title">📊 包装决策对FBA成本的影响 Packaging Impact on Amazon FBA Cost</span></div>
     <p style="font-size:11px;color:var(--slate-400);margin:-8px 0 12px;line-height:1.6">
       本模块展示包装决策 (SIPP认证 vs 不做SIPP) 如何影响每件产品的 Amazon FBA 履约费、SIPP折扣和罚款。<br>
@@ -732,10 +836,33 @@
     <div class="result-panel">
       <div class="result-head"><span style="font-size:22px">🎯</span><h2>线下包装试验路径结果 OFFLINE PACKAGING TEST RESULT</h2></div>
 
-      <!-- Offline Flowchart -->
-      <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
-        <div id="offFlowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+      <div class="summary-card-main">
+        <div class="summary-title">Step 2 · Main Conclusion 主结论</div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="k">Recommended Test Path 推荐测试路径</div>
+            <div class="v" id="off_sum_path">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="k">Recommended Standard 推荐标准</div>
+            <div class="v" id="off_sum_std">—</div>
+          </div>
+          <div class="summary-item full">
+            <div class="k">Decision Basis 判断依据</div>
+            <div class="v" id="off_sum_basis">—</div>
+          </div>
+        </div>
+        <div class="summary-actions">
+          <div class="summary-note">Step 3 details are hidden by default to keep the homepage lighter. 默认收起详细分析，首页更轻。</div>
+          <button class="toggle-btn" type="button" onclick="toggleStep3Offline(this)">Show Step 3 Details 展开详细分析</button>
+        </div>
+      </div>
+
+      <div id="offlineStep3Details" class="details-block">
+        <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)">
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">📋 Decision Path Flowchart 决策路径流程图</div>
+          <div id="offFlowchart" style="display:flex;flex-direction:column;align-items:center;gap:0"></div>
+        </div>
       </div>
 
       <div class="result-card">
@@ -747,6 +874,7 @@
         <div class="result-row"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="off_r_dec"></span></div>
       </div>
 
+      <div id="offlineResultDetails" class="details-block">
       <!-- Pre-conditioning -->
       <div class="result-card" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3)">
         <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:10px">🌡️ 环境预处理 Environmental Pre-conditioning</div>
@@ -796,6 +924,7 @@
       * Offline transport packaging tests are conducted based on OB (outer box). Test sample quantities shall follow the relevant BU quality requirements.
     </p>
   
+      </div>
 </div><!-- end offlinePanel -->
 <!-- PDF Export Actions -->
 <div style="display:flex;gap:12px;justify-content:center;margin:20px 0 10px 0;">
@@ -1038,6 +1167,22 @@ function lookupCB(w){ let f=CB_TIERS[0].fee; for(const t of CB_TIERS) if(w>=t.lb
 function $(id){ return document.getElementById(id); }
 function val(id){ return $(id).value; }
 function num(id){ return parseFloat($(id).value)||0; }
+
+function toggleStep3Online(btn){
+  ['onlineStep3Details','onlineResultDetails','assumptionBox','sec7'].forEach(function(id){
+    var el=$(id); if(el) el.classList.toggle('show');
+  });
+  var expanded = $('onlineStep3Details') && $('onlineStep3Details').classList.contains('show');
+  if(btn) btn.textContent = expanded ? 'Hide Step 3 Details 收起详细分析' : 'Show Step 3 Details 展开详细分析';
+}
+function toggleStep3Offline(btn){
+  ['offlineStep3Details','offlineResultDetails'].forEach(function(id){
+    var el=$(id); if(el) el.classList.toggle('show');
+  });
+  var expanded = $('offlineStep3Details') && $('offlineStep3Details').classList.contains('show');
+  if(btn) btn.textContent = expanded ? 'Hide Step 3 Details 收起详细分析' : 'Show Step 3 Details 展开详细分析';
+}
+
 
 function switchUnit(unit){
   if(unit===currentUnit) return;
@@ -1515,6 +1660,17 @@ function recalc(){
   $('r_samp').textContent=minSamp;
   $('r_proc').textContent=testProc;
   $('r_basis').textContent=decBasis;
+  $('sum_path').textContent = pkgRoute;
+  $('sum_std').textContent = testStd.split('\n')[0];
+  $('sum_sipp').textContent = isAmz
+    ? (sipp==='ELIGIBLE 合格'
+        ? ((costDec.indexOf('KEEP')>=0 && !isNAAmazon)
+            ? 'SIPP eligible, but current packaging may be kept based on cost comparison / 可做SIPP，但基于成本可暂维持现状'
+            : 'Recommend SIPP path / 建议SIPP路径')
+        : 'Not SIPP eligible / 不符合SIPP')
+    : 'Non-Amazon path / 非Amazon路径';
+  $('sum_cost').textContent = costDisp;
+  $('sum_basis').textContent = decBasis;
   let docsHtml = "";
 
 // Online Packaging Guideline
@@ -2283,6 +2439,9 @@ function offlineCalc(){
   $('off_r_basis').textContent = testBasis;
   $('off_r_samp').textContent = minSamp;
   $('off_r_dec').textContent = decBasis;
+  $('off_sum_path').textContent = 'Offline baseline route / 线下基线路径';
+  $('off_sum_std').textContent = testStd.split('\n')[0];
+  $('off_sum_basis').textContent = decBasis;
   $('off_r_precon').textContent = precon;
   $('off_r_predur').textContent = predur;
   $('off_r_preAdvice').textContent = preAdvice;
