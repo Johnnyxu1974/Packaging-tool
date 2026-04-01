@@ -472,8 +472,18 @@
   </div>
 
   <!-- STEP 4 -->
+  <div class="section" id="sec5">
+    <div class="section-head"><div class="step-num">4</div><span class="section-title">🔧 Product Properties 产品属性</span></div>
+    <div class="field"><label>Product fragility 产品易碎性</label>
+      <select id="fragility" onchange="recalc()">
+        <option>Non-fragile 非易碎</option><option selected>Fragile (glass) 易碎(含玻璃)</option><option>Fragile (no glass) 易碎(非玻璃)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
   <div class="section" id="sec4">
-    <div class="section-head"><div class="step-num">4</div><span class="section-title">⚖️ SIPP Size & Weight 尺寸重量</span></div>
+    <div class="section-head"><div class="step-num">5</div><span class="section-title">⚖️ SIPP Size & Weight 尺寸重量</span></div>
     <div class="grid-2">
       <div class="info-row"><span class="lbl">尺寸档位 Dimension Size Tier</span><span class="val" id="dimTierVal"></span></div>
       <div class="info-row"><span class="lbl">重量档位 Weight Tier</span><span class="val" id="weightTierVal"></span></div>
@@ -514,16 +524,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- STEP 5 -->
-  <div class="section" id="sec5">
-    <div class="section-head"><div class="step-num">5</div><span class="section-title">🔧 Product Properties 产品属性</span></div>
-    <div class="field"><label>Product fragility 产品易碎性</label>
-      <select id="fragility" onchange="recalc()">
-        <option>Non-fragile 非易碎</option><option selected>Fragile (glass) 易碎(含玻璃)</option><option>Fragile (no glass) 易碎(非玻璃)</option>
-      </select>
     </div>
   </div>
 
@@ -1676,7 +1676,7 @@ function recalc(){
 // Online Packaging Guideline
 docsHtml += `
 <div style="margin-bottom:6px;">
-  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_Online_Packaging_Test_Guideline_20260327_updated.docx?d=w6ede4a57a9164f7e8146c5247c85a464&csf=1&web=1&e=lEIWCX"
+  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_Online_Packaging_Test_Guideline_20260327_updated.docx?d=w6ede4a57a9164f7e8146c5247c85a464&csf=1&web=1&e=hXjDC5"
      target="_blank"
      style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
      Consumer Packaging Online Test Guideline
@@ -2457,7 +2457,7 @@ function offlineCalc(){
 // ✅ 1. Offline Guideline（放第一位）
 docsHtml += `
 <div style="margin-bottom:6px;">
-  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_offline_Packaging_Test_Guideline%2020260326.docx?d=w9f97e42ca3334f03ae7dff628f05a35f&csf=1&web=1&e=ntiH4a"
+  📄 <a href="https://share.lighting.com/:w:/r/teams/PackagingExcellenceCenter/Shared%20Documents/Engineering%20Expertise/Packaging%20testing/Guidelines%20and%20Decision%20Tool/Signify_offline_Packaging_Test_Guideline%2020260326.docx?d=w9f97e42ca3334f03ae7dff628f05a35f&csf=1&web=1&e=7BLdV7"
      target="_blank"
      style="color:#FFD700 !important; text-decoration:none; font-weight:600;">
      Offline Packaging Test Guideline
