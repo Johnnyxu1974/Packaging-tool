@@ -235,6 +235,28 @@
   }
   .details-block { display:none; }
   .details-block.show { display:block; }
+
+  .ref-toggle-wrap { margin-top: 14px; }
+  .ref-toggle-btn {
+    width: 100%; text-align: left; border: 1px solid var(--slate-300); border-radius: 10px;
+    padding: 12px 14px; background: #f8fafc; color: var(--slate-800); cursor: pointer;
+    font-family: var(--font); font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .ref-toggle-btn .sub { display:block; font-size: 11px; color: var(--slate-500); font-weight: 500; margin-top: 4px; }
+  .ref-toggle-btn .arrow { font-size: 14px; color: var(--slate-500); }
+  .ref-content {
+    display: none; margin-top: 10px; background: #f8fafc; border: 1px solid var(--slate-200);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .ref-content.show { display: block; }
+  .ref-content h4 { font-size: 14px; font-weight: 800; color: var(--slate-900); margin-bottom: 12px; }
+  .ref-block { margin-bottom: 14px; }
+  .ref-block:last-child { margin-bottom: 0; }
+  .ref-block .ttl { font-size: 12px; font-weight: 800; color: var(--blue-700); margin-bottom: 6px; }
+  .ref-block ul { margin: 0; padding-left: 18px; }
+  .ref-block li { font-size: 12px; color: var(--slate-700); line-height: 1.7; margin: 3px 0; }
+
   .assumption-box {
     background:#f3f4f6; border:1px solid #d1d5db; border-radius:12px; padding:16px 18px; margin:16px 0 18px;
   }
@@ -298,11 +320,11 @@
       <div class="header-icon">📦</div>
       <div>
         <h1>Packaging Test Decision System(Consumer Pack)</h1>
-        <p>适用于在线及线下销售消费品包装测试标准选择 · Online (Amazon/D2C) & Offline (Retail/RDC)</p>
+        <p>Online (Amazon/D2C) & Offline (Retail/RDC) packaging test standard selection for consumer products · 适用于在线及线下销售消费品包装测试标准选择</p>
       </div>
     </div>
     <div class="path-banner">
-      <span class="lbl">当前决策路径 Current Decision Path</span>
+      <span class="lbl">Current Decision Path · 当前决策路径</span>
       <span class="val" id="hdr-path">—</span>
     </div>
   </div>
@@ -311,33 +333,33 @@
     <div class="workflow-card">
       <div class="step-kicker">Step 1</div>
       <div class="step-main">Input Conditions 输入条件</div>
-      <div class="step-sub">选择品牌、渠道、地区、产品、包装尺寸与必要输入项。Select brand, channel, region, product and package inputs.</div>
+      <div class="step-sub">Select brand, channel, region, product and package inputs. 选择品牌、渠道、地区、产品、包装尺寸与必要输入项。</div>
     </div>
     <div class="workflow-card">
       <div class="step-kicker">Step 2</div>
       <div class="step-main">Main Decision Result 主结论</div>
-      <div class="step-sub">系统自动输出推荐测试路径、标准、SIPP建议与成本结论。Auto-generated route, standard, SIPP recommendation and cost decision.</div>
+      <div class="step-sub">Auto-generated route, standard, SIPP recommendation and cost decision. 系统自动输出推荐测试路径、标准、SIPP建议与成本结论。</div>
     </div>
     <div class="workflow-card">
       <div class="step-kicker">Step 3</div>
       <div class="step-main">Detailed Analysis 详细分析</div>
-      <div class="step-sub">按需展开流程图、FBA影响、参考文件和内部估算假设。Expand flowchart, FBA impact, reference docs and assumptions only when needed.</div>
+      <div class="step-sub">Expand flowchart, FBA impact, reference docs and assumptions only when needed. 按需展开流程图、FBA影响、参考文件和内部估算假设。</div>
     </div>
   </div>
 
   <!-- BRAND SELECTION (before Step 0) -->
   <div class="section" id="secBrand" style="border:2px solid #059669">
-    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#059669,#047857)">B</div><span class="section-title">🏷️ Brand Type 品牌类型选择</span></div>
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#059669,#047857)">B</div><span class="section-title">🏷️ Brand Type · 品牌类型选择</span></div>
     <div style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.6">
-      请先选择产品使用的品牌类型。第三方/客户品牌如有自身试验要求，则优先执行该要求。<br>
-      Select the brand type first. If a third-party/customer brand has its own packaging test requirement, that requirement shall be followed.
+      Select the brand type first. If a third-party/customer brand has its own packaging test requirement, that requirement shall be followed.<br>
+      请先选择产品使用的品牌类型。第三方/客户品牌如有自身试验要求，则优先执行该要求。
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button id="btnSignify" onclick="switchBrand('signify')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid #059669;background:#059669;color:#fff;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
-        🏢 Signify 自有品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Philips / Signify branded products<br>按本指南标准流程选择试验标准</span>
+        🏢 Signify Own Brand · 自有品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Philips / Signify branded products<br>Follow the guideline standard flow to select test standards · 按本指南标准流程选择试验标准</span>
       </button>
       <button id="btnThirdParty" onclick="switchBrand('thirdparty')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
-        🤝 第三方 / 客户品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Third-party / Customer / Private Label<br>优先执行客户品牌自身试验标准</span>
+        🤝 Third-party / Customer Brand · 第三方 / 客户品牌<br><span style="font-size:11px;font-weight:400;opacity:0.8">Third-party / Customer / Private Label<br>Follow the customer / brand's own test requirement first · 优先执行客户品牌自身试验标准</span>
       </button>
     </div>
     <!-- Sub-question: does third-party brand have its own test requirement? -->
@@ -345,10 +367,10 @@
       <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:10px">第三方/客户品牌是否有自身的包装试验要求？<br>Does the third-party brand have its own packaging test requirement?</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <button id="btnTpHasReq" onclick="switchTpReq('yes')" style="flex:1;min-width:180px;padding:12px 16px;border-radius:10px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;transition:all 0.2s;line-height:1.5">
-          ✅ 有 Yes — 有自身试验标准<br><span style="font-size:11px;font-weight:400">Has own test requirement → 按客户要求执行</span>
+          ✅ Yes — Has own test requirement · 有自身试验标准<br><span style="font-size:11px;font-weight:400">Follow customer requirement · 按客户要求执行</span>
         </button>
         <button id="btnTpNoReq" onclick="switchTpReq('no')" style="flex:1;min-width:180px;padding:12px 16px;border-radius:10px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;transition:all 0.2s;line-height:1.5">
-          ❌ 没有 No — 无特定要求<br><span style="font-size:11px;font-weight:400">No specific requirement → 按Signify标准流程执行</span>
+          ❌ No — No specific requirement · 无特定要求<br><span style="font-size:11px;font-weight:400">Follow Signify standard flow · 按Signify标准流程执行</span>
         </button>
       </div>
     </div>
@@ -360,10 +382,10 @@
       <div class="result-head"><span style="font-size:22px">🎯</span><h2>第三方/客户品牌试验路径结果 THIRD-PARTY BRAND TEST PATH RESULT</h2></div>
       <div class="result-card">
         <div class="result-row"><span class="lbl">品牌类型 Brand Type</span><span class="val">第三方 / 客户品牌 Third-party / Customer Brand</span></div>
-        <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val">按第三方/客户品牌自身试验标准执行<br>Per third-party / customer brand's own packaging test requirement</span></div>
-        <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
-        <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
-        <div class="result-row" style="border-bottom:none"><span class="lbl">判断依据 Decision Basis</span><span class="val">第三方/客户品牌有自身试验标准，该要求优先于本指南。<br>Third-party/customer brand has its own test requirement, which shall prevail over this Guideline.<br><br>如客户标准不低于本指南要求，则以客户标准为准。<br>Where the brand's standard is more stringent than this Guideline, the higher requirement shall prevail.</span></div>
+        <div class="result-row"><span class="lbl">Test Standard · 试验标准</span><span class="val">按第三方/客户品牌自身试验标准执行<br>Per third-party / customer brand's own packaging test requirement</span></div>
+        <div class="result-row"><span class="lbl">Test Method · 试验方式</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
+        <div class="result-row"><span class="lbl">Min. Samples · 样品数量</span><span class="val">按客户要求<br>Per customer/brand requirement</span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">Decision Basis · 判断依据</span><span class="val">第三方/客户品牌有自身试验标准，该要求优先于本指南。<br>Third-party/customer brand has its own test requirement, which shall prevail over this Guideline.<br><br>如客户标准不低于本指南要求，则以客户标准为准。<br>Where the brand's standard is more stringent than this Guideline, the higher requirement shall prevail.</span></div>
       </div>
       <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
         <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7">
@@ -377,17 +399,17 @@
 
   <!-- STEP 0: Channel Selection -->
   <div class="section" id="sec0" style="border:2px solid var(--blue-600)">
-    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">0</div><span class="section-title">🏪 Sales Channel 销售渠道选择</span></div>
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">0</div><span class="section-title">🏪 Sales Channel · 销售渠道选择</span></div>
     <div style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.6">
-      请先选择产品的销售渠道类型，不同渠道适用不同的包装测试标准。<br>
-      Select your sales channel first — different channels require different packaging test standards.
+      Select your sales channel first — different channels require different packaging test standards.<br>
+      请先选择产品的销售渠道类型，不同渠道适用不同的包装测试标准。
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button id="btnOnline" onclick="switchChannel('online')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--blue-600);background:var(--blue-600);color:#fff;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
-        🌐 Online 在线渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">Amazon / D2C / 电商平台<br>适用 SIPP/ISTA 6A/Self-Drop 等标准</span>
+        🌐 Online · 在线渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">Amazon / D2C / 电商平台<br>Applicable to SIPP / ISTA 6A / Self-Drop standards · 适用 SIPP/ISTA 6A/Self-Drop 等标准</span>
       </button>
       <button id="btnOffline" onclick="switchChannel('offline')" style="flex:1;min-width:200px;padding:16px 20px;border-radius:12px;border:2px solid var(--slate-300);background:#fff;color:var(--slate-600);cursor:pointer;font-family:var(--font);font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;line-height:1.5">
-        🏬 Offline 线下渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">零售 / 分销 / RDC 配送中心<br>适用 ISTA 3-Lite / UND1400 等标准</span>
+        🏬 Offline · 线下渠道<br><span style="font-size:11px;font-weight:400;opacity:0.8">Retail / Distribution / RDC delivery center · 零售 / 分销 / RDC 配送中心<br>Applicable to ISTA 3-Lite / UND1400 standards · 适用 ISTA 3-Lite / UND1400 等标准</span>
       </button>
     </div>
   </div>
@@ -397,7 +419,7 @@
 
   <!-- STEP 1 -->
   <div class="section" id="sec1">
-    <div class="section-head"><div class="step-num">1</div><span class="section-title">🌍 Region & Channel 地区与渠道</span></div>
+    <div class="section-head"><div class="step-num">1</div><span class="section-title">🌍 Region & Channel · 地区与渠道</span></div>
     <div class="grid-2">
       <div class="field"><label>Sales Region 销售地区</label>
         <select id="region" onchange="recalc()">
@@ -425,7 +447,7 @@
 
   <!-- STEP 2 -->
   <div class="section" id="sec2">
-    <div class="section-head"><div class="step-num">2</div><span class="section-title">📐 Package Information 包装信息</span></div>
+    <div class="section-head"><div class="step-num">2</div><span class="section-title">📐 Package Information · 包装信息</span></div>
     <div style="margin-bottom:12px;display:flex;align-items:center;gap:12px">
       <span style="font-size:13px;font-weight:600;color:var(--slate-600)">Unit 单位:</span>
       <div style="display:inline-flex;border-radius:8px;overflow:hidden;border:1.5px solid var(--slate-300)">
@@ -434,7 +456,7 @@
       </div>
     </div>
     <div id="upNote" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1e40af;line-height:1.6;display:none">
-      ℹ️ 请输入产品的 <b>单品运输包装 (UP)</b> 尺寸和重量。此包装应为可通过内部 Global Online Test 的标准运输包装。<br>
+      ℹ️ 请输入产品的 <b>Unit Pack (UP) · 单品运输包装 (UP)</b> 尺寸和重量。此包装应为可通过内部 Global Online Test 的标准运输包装。<br>
       Enter the <b>Unit Pack (UP)</b> dimensions and weight — the shipping-ready packaging that passes internal Global Online Test.
     </div>
     <div class="grid-4">
@@ -458,7 +480,7 @@
 
   <!-- STEP 3 -->
   <div class="section" id="sec3">
-    <div class="section-head"><div class="step-num">3</div><span class="section-title">🔍 SIPP Exclusion Check 排除项检查</span></div>
+    <div class="section-head"><div class="step-num">3</div><span class="section-title">🔍 SIPP Exclusion Check · 排除项检查</span></div>
     <div class="section-hint" id="exclusionHint"></div>
     <div class="grid-2">
       <div class="field"><label>含锂电池? Lithium Battery?</label><select id="lithiumBattery" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
@@ -468,25 +490,36 @@
       <div class="field"><label>L形包装? L-shaped box?</label><select id="lShaped" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
       <div class="field"><label>危险品? Hazardous item?</label><select id="hazardous" onchange="recalc()"><option>Yes</option><option selected>No</option></select></div>
     </div>
-    <div class="info-row"><span class="lbl">排除项结果 Exclusion Result</span><span class="val hl" id="exclusionResult"></span></div>
+    <div class="info-row"><span class="lbl">Exclusion Result · 排除项结果</span><span class="val hl" id="exclusionResult"></span></div>
   </div>
 
   <!-- STEP 4 -->
   <div class="section" id="sec5">
-    <div class="section-head"><div class="step-num">4</div><span class="section-title">🔧 Product Properties 产品属性</span></div>
+    <div class="section-head"><div class="step-num">4</div><span class="section-title">🔧 Product Properties · 产品属性</span></div>
     <div class="field"><label>Product fragility 产品易碎性</label>
       <select id="fragility" onchange="recalc()">
         <option>Non-fragile 非易碎</option><option selected>Fragile (glass) 易碎(含玻璃)</option><option>Fragile (no glass) 易碎(非玻璃)</option>
       </select>
+      <div style="font-size:10px;color:var(--slate-400);margin-top:8px;line-height:1.6">
+        <b>Fragility classification guide / 易碎性分类说明</b><br>
+        • Non-fragile: plastic, metal, or other products not normally expected to crack, shatter, or leak during distribution.<br>
+        非易碎：如塑料、金属等，在常规运输中通常不会破裂、碎裂或泄漏。<br>
+        • Fragile (glass): products containing glass parts or glass-dominant breakable components.<br>
+        易碎（玻璃）：含玻璃部件或以玻璃为主要易碎材料的产品。<br>
+        • Fragile (no glass): products without glass but with other breakable materials, such as stone, ceramic, porcelain, clay, or similar components that may crack or chip during distribution.<br>
+        易碎（非玻璃）：不含玻璃，但含石材、陶瓷、瓷器、黏土类或类似易碎部件，运输中可能开裂或崩边。<br>
+        • Amazon note: rigid fragile products under 50 lb generally require ISTA 6-Amazon Type A certified-lab testing, while rigid non-fragile products may use Amazon self-drop or ISTA 6-Amazon Type A.<br>
+        Amazon说明：50 lb 以下刚性易碎产品通常需采用认证实验室执行 ISTA 6-Amazon Type A；刚性非易碎产品通常可采用 Amazon self-drop 或 ISTA 6-Amazon Type A。
+      </div>
     </div>
   </div>
 
   <!-- STEP 5 -->
   <div class="section" id="sec4">
-    <div class="section-head"><div class="step-num">5</div><span class="section-title">⚖️ SIPP Size & Weight 尺寸重量</span></div>
+    <div class="section-head"><div class="step-num">5</div><span class="section-title">⚖️ SIPP Size & Weight · 尺寸重量</span></div>
     <div class="grid-2">
-      <div class="info-row"><span class="lbl">尺寸档位 Dimension Size Tier</span><span class="val" id="dimTierVal"></span></div>
-      <div class="info-row"><span class="lbl">重量档位 Weight Tier</span><span class="val" id="weightTierVal"></span></div>
+      <div class="info-row"><span class="lbl">Dimension Size Tier · 尺寸档位</span><span class="val" id="dimTierVal"></span></div>
+      <div class="info-row"><span class="lbl">Weight Tier · 重量档位</span><span class="val" id="weightTierVal"></span></div>
       <div class="info-row"><span class="lbl">最小尺寸 Min size ≥6×4×0.375 in?</span><span id="minSizeVal" class="badge badge-green"></span></div>
       <div class="info-row"><span class="lbl">重量 Weight ≤ 50 lb?</span><span id="weightOkVal" class="badge badge-green"></span></div>
     </div>
@@ -499,53 +532,125 @@
     <!-- Overbox Impact Estimator -->
     <div id="overboxSection" style="display:none;margin-top:12px">
       <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:16px 20px">
-        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📦 Overbox 影响估算 Overbox Impact Estimator</div>
+        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📦 Overbox Impact Estimator · Overbox影响估算</div>
         <div style="font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.6">
-          如果不通过SIPP认证, Amazon可能会对产品加外箱(overbox)发货。以下估算overbox后的尺寸变化和费用影响。<br>
-          If not SIPP certified, Amazon may add an overbox. Below estimates the dimension change and cost impact using internal buffer presets and community reference box sizes.
+          If not SIPP certified, Amazon may add an overbox. The section below estimates dimension change and potential cost exposure using internal buffer assumptions and community reference box sizes.<br>
+          若未通过SIPP认证，Amazon可能会对产品加外箱（overbox）发货。以下内容基于内部缓冲假设和社区参考箱型，对尺寸变化及潜在成本暴露进行估算。<br>
+          <span style="font-size:10px;font-weight:700">Internal decision-support estimate only, not an official Amazon charge item. / 仅用于内部决策支持，并非Amazon官方收费项目。</span>
         </div>
         <div class="grid-2">
-          <div class="info-row"><span class="lbl">原包装尺寸 Original Size</span><span class="val" id="ob_origSize"></span></div>
-          <div class="info-row"><span class="lbl">原尺寸档位 Original Size Tier</span><span class="val" id="ob_origTier"></span></div>
-          <div class="info-row"><span class="lbl">估算Overbox尺寸 Est. Overbox Size</span><span class="val" style="color:#991b1b;font-weight:700" id="ob_newSize"></span></div>
-          <div class="info-row"><span class="lbl">Overbox后尺寸档位 Size Tier after Overbox</span><span class="val" style="font-weight:700" id="ob_newTier"></span></div>
-          <div class="info-row"><span class="lbl">参考Amazon箱号 Ref. Amazon Box Code</span><span class="val" id="ob_boxCode"></span></div>
-          <div class="info-row"><span class="lbl">后台Buffer逻辑 Applied Buffer Logic</span><span class="val" id="ob_bufferRule"></span></div>
-          <div class="info-row"><span class="lbl">是否从Sortable变Non-Sortable? Sortable→Non-Sortable?</span><span class="val" style="font-weight:700" id="ob_tierJump"></span></div>
+          <div class="info-row"><span class="lbl">Original Size · 原包装尺寸</span><span class="val" id="ob_origSize"></span></div>
+          <div class="info-row"><span class="lbl">Original Size Tier · 原尺寸档位</span><span class="val" id="ob_origTier"></span></div>
+          <div class="info-row"><span class="lbl">Estimated Overbox Size · 估算Overbox尺寸</span><span class="val" style="color:#991b1b;font-weight:700" id="ob_newSize"></span></div>
+          <div class="info-row"><span class="lbl">Estimated Size Tier after Overbox · 估算Overbox后尺寸档位</span><span class="val" style="font-weight:700" id="ob_newTier"></span></div>
+          <div class="info-row"><span class="lbl">Reference Amazon Box Code · 参考Amazon箱号</span><span class="val" id="ob_boxCode"></span></div>
+          <div class="info-row"><span class="lbl">Applied Buffer Logic · 采用的缓冲逻辑</span><span class="val" id="ob_bufferRule"></span></div>
+          <div class="info-row"><span class="lbl">Sortable → Non-Sortable? · 是否从Sortable变为Non-Sortable？</span><span class="val" style="font-weight:700" id="ob_tierJump"></span></div>
         </div>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,158,11,0.3)">
-          <div style="font-size:13px;font-weight:700;color:#78350f;margin-bottom:8px">💰 不做SIPP的最坏年度成本估算 Worst-case Annual Cost (without SIPP)</div>
-          <div class="info-row"><span class="lbl">SIOC罚款 SIOC Chargeback/Packaging Fee</span><span class="val" style="color:#991b1b" id="ob_annCB"></span></div>
-          <div class="info-row"><span class="lbl">FBA费率跳档差 FBA Tier Jump Cost</span><span class="val" style="color:#991b1b" id="ob_annJump"></span></div>
-          <div class="info-row"><span class="lbl">预处理费 Prep Fee (估算 Est. bagging/bubble)</span><span class="val" style="color:#991b1b" id="ob_annPrep"></span></div>
+          <div style="font-size:13px;font-weight:700;color:#78350f;margin-bottom:8px">💰 Internal Worst-case Annual Cost Estimate (without SIPP) · 不做SIPP的内部最坏情况年度成本估算</div>
+          <div class="info-row"><span class="lbl">SIOC Chargeback / Packaging Fee · SIOC罚款/包装费</span><span class="val" style="color:#991b1b" id="ob_annCB"></span></div>
+          <div class="info-row"><span class="lbl">Estimated Overbox-Related FBA Fee Difference · 估算的Overbox相关FBA费用差额</span><span class="val" style="color:#991b1b" id="ob_annJump"></span></div>
+          <div class="info-row"><span class="lbl">Internal Repacking / Handling Cost Assumption · 内部重包装/操作成本假设</span><span class="val" style="color:#991b1b" id="ob_annPrep"></span></div>
           <div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:4px;border-top:2px solid #f59e0b;font-size:14px">
-            <span style="font-weight:800;color:#78350f">不做SIPP总年度额外成本 Total Annual Extra Cost without SIPP</span>
+            <span style="font-weight:800;color:#78350f">Total Annual Extra Cost without SIPP · 不做SIPP的年度额外总成本</span>
             <span style="font-weight:800;color:#991b1b;font-size:16px" id="ob_totalAnn"></span>
           </div>
         </div>
       </div>
     </div>
+    <div class="ref-toggle-wrap">
+      <button class="ref-toggle-btn" type="button" onclick="toggleSippReference(this)">
+        <span>
+          📘 Amazon Current SIPP Packaging Requirements (Reference) · Amazon 当前 SIPP 包装要求（参考说明）
+          <span class="sub">Click to expand the fixed reference details · 点击展开固定参考说明</span>
+        </span>
+        <span class="arrow">▾</span>
+      </button>
+      <div id="sippReferenceContent" class="ref-content">
+        <h4>Amazon Current SIPP Packaging Requirements (Reference)<br>Amazon 当前 SIPP 包装要求（参考说明）</h4>
+
+        <div class="ref-block">
+          <div class="ttl">1. Minimum pack size for SIPP eligibility / 1. SIPP 合格的最小包装尺寸</div>
+          <ul>
+            <li>Minimum pack dimensions: 6.0 × 4.0 × 0.375 in</li>
+            <li>Packs below this size are not eligible for SIPP certification, because they cannot accommodate the standard 6 × 4 in shipping label.</li>
+            <li>最小包装尺寸要求：6.0 × 4.0 × 0.375 英寸。</li>
+            <li>低于该尺寸的包装通常不符合 SIPP 认证要求，因为无法容纳标准 6 × 4 英寸运单标签。</li>
+          </ul>
+        </div>
+
+        <div class="ref-block">
+          <div class="ttl">2. Rigid-pack structural requirements / 2. 刚性包装结构要求</div>
+          <ul>
+            <li>Rigid packaging should be six-sided.</li>
+            <li>No protrusions, windows, or cut-outs.</li>
+            <li>Hand holes are allowed only within Amazon-defined limits.</li>
+            <li>Packaging should be properly sealed and designed to avoid unnecessary handling risk.</li>
+            <li>刚性包装应为六面体结构。</li>
+            <li>不应有突出物、开窗或挖孔。</li>
+            <li>提手孔仅可在 Amazon 允许范围内设置。</li>
+            <li>包装应充分封合，并尽量避免额外操作和搬运风险。</li>
+          </ul>
+        </div>
+
+        <div class="ref-block">
+          <div class="ttl">3. Flexible packaging / slack-fill requirement / 3. 柔性包装 / 空隙量要求</div>
+          <ul>
+            <li>Flexible packaging should be right-sized and should not contain excess slack-fill.</li>
+            <li>When lifted at one corner, cumulative slack-fill should not exceed 2 in in any direction.</li>
+            <li>This slack-fill requirement applies mainly to flexible packaging, not rigid packs.</li>
+            <li>柔性包装应尽量贴合产品尺寸，不应存在过量空隙。</li>
+            <li>当拎起包装袋一个角时，任一方向的累计空隙量不应超过 2 英寸。</li>
+            <li>该空隙量要求主要适用于柔性包装，并不直接等同于刚性包装的孔隙率要求。</li>
+          </ul>
+        </div>
+
+        <div class="ref-block">
+          <div class="ttl">4. Note / 4. 说明</div>
+          <ul>
+            <li>This section is provided as a fixed reference for key Amazon SIPP requirements.</li>
+            <li>For detailed certification rules, always refer to the latest official Amazon SIPP guideline.</li>
+            <li>本部分作为 Amazon SIPP 关键要求的固定参考说明。</li>
+            <li>具体认证判定仍应以最新 Amazon 官方 SIPP 指南为准。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
   </div>
+
 
   <!-- STEP 6 -->
   <div class="section" id="sec6">
-    <div class="section-head"><div class="step-num">6</div><span class="section-title">💰 Cost Inputs 成本输入 (Amazon SIPP Path)</span></div>
+    <div class="section-head"><div class="step-num">6</div><span class="section-title">💰 Cost Inputs (Amazon SIPP Path) · 成本输入</span></div>
     <div class="section-hint" id="costHint"></div>
     <div class="grid-3">
-      <div class="field"><label>当前包装成本 Pack cost (USD/pc)</label><div class="field-row"><input type="number" id="packCost" value="1" step="0.01" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div></div>
-      <div class="field"><label>年总预测量 Annual total forecast</label><div class="field-row"><input type="number" id="totalForecast" value="3000" onchange="recalc()" oninput="recalc()"><span class="unit">units</span></div></div>
-      <div class="field"><label>Amazon占比 Amazon share of total</label><div class="field-row"><input type="number" id="amazonSharePct" value="60" step="0.1" min="0" max="100" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div>
+      <div class="field"><label>Pack cost (USD/pc) · 当前包装成本</label><div class="field-row"><input type="number" id="packCost" value="1" step="0.01" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div></div>
+      <div class="field"><label>Annual total forecast · 年总预测量</label><div class="field-row"><input type="number" id="totalForecast" value="3000" onchange="recalc()" oninput="recalc()"><span class="unit">units</span></div></div>
+      <div class="field"><label>Amazon share of total · Amazon占比</label><div class="field-row"><input type="number" id="amazonSharePct" value="60" step="0.1" min="0" max="100" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div>
         <div style="font-size:10px;color:var(--slate-400);margin-top:2px">= <span id="amazonUnitsCalc">200</span> Amazon units</div>
       </div>
-      <div class="field"><label>SIPP达标包装增加成本比例 Pack cost increase % for SIPP compliance</label>
+      <div class="field"><label>Pack cost increase % for SIPP compliance · SIPP达标包装增加成本比例</label>
         <select id="improvementLevel" onchange="recalc()"><option selected>Small</option><option>Medium</option><option>Large</option><option>Custom</option></select>
-        <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Small=10% · Medium=25% · Large=50% 在现有包装成本基础上增加的比例，用于达到Amazon SIPP试验要求<br>(estimated additional cost on current pack to pass Amazon SIPP test)</div>
+        <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.6">
+<b>Typical estimation guide · 典型估算说明</b><br>
+• Small = 10%: simple divider, light inner support, or limited cushioning addition.<br>
+• 10%：如增加简单隔板、轻量内衬或少量缓冲。<br>
+• Medium = 25%: more complete insert, more cushioning volume, or partial structural strengthening.<br>
+• 25%：如增加较完整内衬、增加缓冲体积，或局部结构加强。<br>
+• Large = 50%: major pack redesign, significant size increase, or strong material upgrade.<br>
+• 50%：如明显增大包装体积、重设计整体结构，或显著提升材料强度。<br>
+• For reference only; actual increase should be validated by engineering and supplier quotation.<br>
+• 仅供参考；实际增幅需结合工程评估和供应商报价确认。
+</div>
       </div>
-      <div class="field" id="customImpField" style="display:none"><label>自定义改善% Custom improvement %</label><div class="field-row"><input type="number" id="customImpPct" value="15" step="1" min="0" max="200" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div></div>
-      <div class="field"><label>测试费 Test+cert cost (USD)</label><div class="field-row"><input type="number" id="testCertCost" value="800" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div>
+      <div class="field" id="customImpField" style="display:none"><label>Custom improvement % · 自定义改善%</label><div class="field-row"><input type="number" id="customImpPct" value="15" step="1" min="0" max="200" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div></div>
+      <div class="field"><label>Test+cert cost (USD) · 测试费</label><div class="field-row"><input type="number" id="testCertCost" value="800" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div>
         <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Fragile → ~$800 (3rd-party certified lab, e.g. ISTA 6A)<br>Non-fragile self-test → $0 (internal drop test)</div>
       </div>
-      <div class="field"><label>摊销年数 Amortization years</label><div class="field-row"><input type="number" id="amortYears" value="1" min="1" onchange="recalc()" oninput="recalc()"><span class="unit">years</span></div>
+      <div class="field"><label>Amortization years · 摊销年数</label><div class="field-row"><input type="number" id="amortYears" value="1" min="1" onchange="recalc()" oninput="recalc()"><span class="unit">years</span></div>
         <div style="font-size:10px;color:var(--slate-400);margin-top:2px;line-height:1.5">Test cost spread over how many years (test fee ÷ years)</div>
       </div>
     </div>
@@ -553,7 +658,7 @@
 
   <!-- RESULT -->
   <div class="result-panel">
-    <div class="result-head"><span style="font-size:22px">🎯</span><h2>包装试验路径选择结果 PACKAGING TEST PATH RESULT</h2></div>
+    <div class="result-head"><span style="font-size:22px">🎯</span><h2>PACKAGING TEST PATH RESULT · 包装试验路径选择结果</h2></div>
 
     <div class="summary-card-main">
       <div class="summary-title">Step 2 · Main Conclusion 主结论</div>
@@ -594,12 +699,12 @@
 
     <div class="result-card">
       <div class="result-row"><span class="lbl">Decision Path 决策路径</span><span class="val" id="r_dp"></span></div>
-      <div class="result-row"><span class="lbl">包装路线 Packaging Route</span><span class="val" id="r_pkg"></span></div>
-      <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val" id="r_std"></span></div>
-      <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val" id="r_method"></span></div>
-      <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val" id="r_samp"></span></div>
-      <div class="result-row"><span class="lbl">试验程序 Test Procedure</span><span class="val" id="r_proc"></span></div>
-      <div class="result-row" style="border-bottom:none"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="r_basis"></span></div>
+      <div class="result-row"><span class="lbl">Packaging Route · 包装路线</span><span class="val" id="r_pkg"></span></div>
+      <div class="result-row"><span class="lbl">Test Standard · 试验标准</span><span class="val" id="r_std"></span></div>
+      <div class="result-row"><span class="lbl">Test Method · 试验方式</span><span class="val" id="r_method"></span></div>
+      <div class="result-row"><span class="lbl">Min. Samples · 样品数量</span><span class="val" id="r_samp"></span></div>
+      <div class="result-row"><span class="lbl">Test Procedure · 试验程序</span><span class="val" id="r_proc"></span></div>
+      <div class="result-row" style="border-bottom:none"><span class="lbl">Decision Basis · 判断依据</span><span class="val" id="r_basis"></span></div>
     </div>
     <div id="onlineResultDetails" class="details-block">
     <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
@@ -612,13 +717,13 @@
     <!-- Cost Comparison - detailed visual (shown for all Amazon SIPP-eligible products) -->
     <div id="costCompareCard" style="display:none;margin-bottom:16px">
       <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.15)">
-        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:14px">⚖️ 包装升级 vs 不做SIPP 年度成本对比 Packaging Upgrade vs No-SIPP Annual Cost</div>
+        <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:14px">⚖️ Packaging Upgrade vs No-SIPP Annual Cost · 包装升级 vs 不做SIPP 年度成本对比</div>
 
         <!-- Two columns -->
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
           <!-- Left: Upgrade SIPP -->
           <div id="ccLeft" style="flex:1;min-width:220px;background:rgba(5,150,105,0.15);border:1.5px solid rgba(5,150,105,0.4);border-radius:10px;padding:14px">
-            <div style="font-size:13px;font-weight:700;color:#86efac;margin-bottom:10px">🅰️ 升级包装做SIPP Upgrade to SIPP</div>
+            <div style="font-size:13px;font-weight:700;color:#86efac;margin-bottom:10px">🅰️ Upgrade to SIPP · 升级包装做SIPP</div>
             <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.8">
               <div>包装成本增加 Pack cost increase: <b id="cc_impPct" style="color:#fff"></b></div>
               <div>每件增量 Incremental/pc: <b id="cc_inc" style="color:#fff"></b></div>
@@ -632,16 +737,16 @@
           </div>
           <!-- Right: Keep / No SIPP -->
           <div id="ccRight" style="flex:1;min-width:220px;background:rgba(220,38,38,0.12);border:1.5px solid rgba(220,38,38,0.35);border-radius:10px;padding:14px">
-            <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">🅱️ 不做SIPP (Amazon加外箱) No SIPP (Amazon Overbox)</div>
+            <div style="font-size:13px;font-weight:700;color:#fca5a5;margin-bottom:10px">🅱️ No SIPP (Amazon Overbox) · 不做SIPP（Amazon加外箱）</div>
             <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.8">
-              <div>SIOC Chargeback 罚款: <b id="cc_cb" style="color:#fff"></b></div>
-              <div>FBA费率跳档差 FBA Tier Jump: <b id="cc_jump" style="color:#fff"></b></div>
-              <div>预处理费 Prep Fee: <b id="cc_prep" style="color:#fff"></b></div>
-              <div>损失SIPP折扣 Lost SIPP Discount: <b id="cc_lostDisc" style="color:#fff"></b></div>
-              <div>Amazon年销量 Amazon units: <b id="cc_units" style="color:#fff"></b></div>
+              <div>SIOC Chargeback · 罚款: <b id="cc_cb" style="color:#fff"></b></div>
+              <div>Estimated Overbox-Related FBA Fee Difference · 估算的Overbox相关FBA费用差额: <b id="cc_jump" style="color:#fff"></b></div>
+              <div>Internal Repacking / Handling Cost Assumption · 内部重包装/操作成本假设: <b id="cc_prep" style="color:#fff"></b></div>
+              <div>Lost SIPP Discount · 损失的SIPP折扣: <b id="cc_lostDisc" style="color:#fff"></b></div>
+              <div>Amazon Units · Amazon年销量: <b id="cc_units" style="color:#fff"></b></div>
             </div>
             <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,38,38,0.3)">
-              <div style="font-size:11px;color:rgba(255,255,255,0.5)">年度总额外成本 Total Annual Extra Cost (含损失折扣)</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5)">Total Annual Extra Cost (incl. lost discount) · 年度额外总成本（含损失折扣）</div>
               <div style="font-size:20px;font-weight:800;color:#fca5a5" id="cc_totalKeep"></div>
             </div>
           </div>
@@ -652,6 +757,43 @@
           <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">成本决策 Cost Decision</div>
           <div style="font-size:15px;font-weight:800" id="cc_verdictText"></div>
           <div style="font-size:11px;margin-top:6px;color:rgba(255,255,255,0.6)" id="cc_verdictSub"></div>
+        </div>
+
+        <div id="extraDecisionLogic" style="display:none;margin-top:18px;background:rgba(255,255,255,0.08);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.12)">
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px">🧠 Extra Decision Logic: Enlarge Box vs Accept Overpacking / 补充决策逻辑：放大包装还是接受亚马逊加外箱</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.68);line-height:1.7;margin-bottom:14px">
+            This section makes the embedded logic explicit for users. Click to view Step 1–3 details if needed. 默认仅显示最终逻辑结论，Step 1–3 点击后展开。
+          </div>
+
+          <button type="button" id="xdlToggleBtn" onclick="toggleExtraDecisionLogic(this)" style="border:none;border-radius:10px;padding:10px 14px;cursor:pointer;font-family:var(--font);background:#dbeafe;color:#1d4ed8;font-size:12px;font-weight:800;margin-bottom:14px;">
+            Show Step 1–3 Logic / 展开 Step 1–3 逻辑
+          </button>
+
+          <div id="xdlStepsBlock" style="display:none;">
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+              <div style="font-size:11px;color:#93c5fd;font-weight:800;margin-bottom:8px">STEP 1</div>
+              <div style="font-size:13px;color:#fff;font-weight:700;line-height:1.6" id="xdl_step1_title"></div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;margin-top:6px" id="xdl_step1_body"></div>
+            </div>
+            <div style="text-align:center;color:rgba(255,255,255,0.35);font-size:26px;line-height:1;margin:-2px 0 10px;">↓</div>
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+              <div style="font-size:11px;color:#93c5fd;font-weight:800;margin-bottom:8px">STEP 2</div>
+              <div style="font-size:13px;color:#fff;font-weight:700;line-height:1.6" id="xdl_step2_title"></div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;margin-top:6px" id="xdl_step2_body"></div>
+            </div>
+            <div style="text-align:center;color:rgba(255,255,255,0.35);font-size:26px;line-height:1;margin:-2px 0 10px;">↓</div>
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+              <div style="font-size:11px;color:#93c5fd;font-weight:800;margin-bottom:8px">STEP 3</div>
+              <div style="font-size:13px;color:#fff;font-weight:700;line-height:1.6" id="xdl_step3_title"></div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;margin-top:6px" id="xdl_step3_body"></div>
+            </div>
+          </div>
+
+          <div id="xdl_final" style="background:rgba(5,150,105,0.16);border:1.5px solid rgba(5,150,105,0.35);border-radius:12px;padding:14px 16px;">
+            <div style="font-size:11px;color:#86efac;font-weight:800;margin-bottom:8px">FINAL LOGIC OUTPUT / 最终逻辑结论</div>
+            <div style="font-size:13px;color:#fff;font-weight:800;line-height:1.7" id="xdl_final_title" style="white-space:pre-line"></div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.78);line-height:1.7;margin-top:6px" id="xdl_final_body" style="white-space:pre-line"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -686,7 +828,7 @@
 
   <!-- STEP 7: FBA Cost Estimator -->
   <div class="section details-block" id="sec7">
-    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#f59e0b,#d97706)">7</div><span class="section-title" id="sec7_title">📊 包装决策对FBA成本的影响 Packaging Impact on Amazon FBA Cost</span></div>
+    <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#f59e0b,#d97706)">7</div><span class="section-title" id="sec7_title">📊 Packaging Impact on Amazon FBA Cost · 包装决策对FBA成本的影响</span></div>
     <p style="font-size:11px;color:var(--slate-400);margin:-8px 0 12px;line-height:1.6">
       本模块展示包装决策 (SIPP认证 vs 不做SIPP) 如何影响每件产品的 Amazon FBA 履约费、SIPP折扣和罚款。<br>
       This module shows how packaging decisions (SIPP vs non-SIPP) affect per-unit FBA fulfillment fees, SIPP discounts, and chargebacks.<br>
@@ -699,7 +841,7 @@
 
     <!-- FBA Basic Info (always shown) -->
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px 20px;margin-top:8px">
-      <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px" id="fba_boxTitle">📦 FBA费用明细 FBA Fee Breakdown (per unit)</div>
+      <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px" id="fba_boxTitle">📦 FBA Fee Breakdown (per unit) · FBA费用明细</div>
       <div class="info-row"><span class="lbl">SIPP尺寸档位 SIPP Size Tier (Step 4)</span><span class="val" id="fba_sippTier"></span></div>
       <div class="info-row"><span class="lbl">FBA尺寸档位 FBA Size Tier (Amazon)</span><span class="val" style="font-weight:700" id="fba_tier"></span></div>
       <div class="info-row"><span class="lbl">计费重量 Shipping Weight</span><span class="val" id="fba_shipWt"></span></div>
@@ -713,7 +855,7 @@
     <!-- MODE A: KEEP baseline - show current cost only -->
     <div id="fba_modeKeep" style="display:none">
       <div style="background:linear-gradient(135deg,#78350f,#92400e);border-radius:10px;padding:16px 20px;margin-top:12px;color:#fff">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 当前方案 Amazon Cost (per unit 每件) — 维持包装+接受罚款</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 Current Amazon Cost (per unit) · 当前方案每件成本 — 维持包装+接受罚款</div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
           <span style="color:rgba(255,255,255,0.6)">FBA Fulfillment Fee</span><span style="font-weight:700" id="fba_k_ful"></span>
         </div>
@@ -736,7 +878,7 @@
     <!-- MODE B: UPGRADE / NA - show SIPP comparison -->
     <div id="fba_modeSipp" style="display:none">
       <div style="background:linear-gradient(135deg,#1e3a5f,#0f172a);border-radius:10px;padding:16px 20px;margin-top:12px;color:#fff">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 SIPP Cost Comparison (per unit 每件) — 升级SIPP方案</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">💰 SIPP Cost Comparison (per unit) · 每件成本对比 — 升级SIPP方案</div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px">
           <span style="color:rgba(255,255,255,0.6)">With SIPP (已认证,无罚款,有折扣)</span><span style="font-weight:700" id="fba_totalA"></span>
         </div>
@@ -775,7 +917,7 @@
 
     <!-- Offline Step 1: Product Info -->
     <div class="section">
-      <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">1</div><span class="section-title">📦 Offline Product Info 线下产品信息</span></div>
+      <div class="section-head"><div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">1</div><span class="section-title">📦 Offline Product Info · 线下产品信息</span></div>
       <div class="grid-2">
         <div class="field">
           <label>项目/渠道类型 Project / Channel Type</label>
@@ -797,13 +939,21 @@
         </div>
       
         <div class="field" id="off_packField">
-          <label>Packed in Europe? 是否在欧洲完成线下包装/适用欧洲线下托盘运输?</label>
+          <label>Packed in Europe? 是否在欧洲完成线下包装?</label>
           <select id="off_packEurope" onchange="offlineCalc()">
             <option selected>Yes 是</option>
             <option>No 否</option>
           </select>
         </div>
-      
+
+        <div class="field" id="off_lampsFlowField" style="display:none">
+          <label>LED Lamps 欧洲线下流向 / 运输方式 LED Lamps Europe Offline Flow / Transport Mode</label>
+          <select id="off_lampsFlow" onchange="offlineCalc()">
+            <option selected>Europe domestic offline + palletized transport (欧洲本地线下 + 托盘运输)</option>
+            <option>Export to other countries or non-palletized transport (出口其他国家或非托盘运输)</option>
+          </select>
+        </div>
+
         <div class="field" id="off_regionField" style="display:none">
           <label>LED LUM 销售/发运地区 LED LUM Sales/Shipping Region</label>
           <select id="off_salesRegion" onchange="offlineCalc()">
@@ -834,7 +984,7 @@
 
     <!-- Offline Result -->
     <div class="result-panel">
-      <div class="result-head"><span style="font-size:22px">🎯</span><h2>线下包装试验路径结果 OFFLINE PACKAGING TEST RESULT</h2></div>
+      <div class="result-head"><span style="font-size:22px">🎯</span><h2>OFFLINE PACKAGING TEST RESULT · 线下包装试验路径结果</h2></div>
 
       <div class="summary-card-main">
         <div class="summary-title">Step 2 · Main Conclusion 主结论</div>
@@ -866,36 +1016,36 @@
       </div>
 
       <div class="result-card">
-        <div class="result-row"><span class="lbl">销售渠道 Sales Channel</span><span class="val">Offline 线下渠道 (零售/分销/RDC)</span></div>
-        <div class="result-row"><span class="lbl">试验标准 Test Standard</span><span class="val" id="off_r_std"></span></div>
-        <div class="result-row"><span class="lbl">试验方式 Test Method</span><span class="val" id="off_r_method"></span></div>
-        <div class="result-row"><span class="lbl">试验基础 Test Basis</span><span class="val" id="off_r_basis"></span></div>
-        <div class="result-row"><span class="lbl">样品数量 Min. Samples</span><span class="val" id="off_r_samp"></span></div>
-        <div class="result-row"><span class="lbl">判断依据 Decision Basis</span><span class="val" id="off_r_dec"></span></div>
+        <div class="result-row"><span class="lbl">Sales Channel · 销售渠道</span><span class="val">Offline 线下渠道 (零售/分销/RDC)</span></div>
+        <div class="result-row"><span class="lbl">Test Standard · 试验标准</span><span class="val" id="off_r_std"></span></div>
+        <div class="result-row"><span class="lbl">Test Method · 试验方式</span><span class="val" id="off_r_method"></span></div>
+        <div class="result-row"><span class="lbl">Test Basis · 试验基础</span><span class="val" id="off_r_basis"></span></div>
+        <div class="result-row"><span class="lbl">Min. Samples · 样品数量</span><span class="val" id="off_r_samp"></span></div>
+        <div class="result-row"><span class="lbl">Decision Basis · 判断依据</span><span class="val" id="off_r_dec"></span></div>
       </div>
 
       <div id="offlineResultDetails" class="details-block">
       <!-- Pre-conditioning -->
       <div class="result-card" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3)">
-        <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:10px">🌡️ 环境预处理 Environmental Pre-conditioning</div>
-        <div class="result-row"><span class="lbl">预处理条件 Conditions</span><span class="val" id="off_r_precon"></span></div>
-        <div class="result-row"><span class="lbl">预处理时间 Duration</span><span class="val" id="off_r_predur"></span></div>
-        <div class="result-row" style="border-bottom:none"><span class="lbl">预处理建议 Recommendation</span><span class="val" id="off_r_preAdvice"></span></div>
+        <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:10px">🌡️ Environmental Pre-conditioning · 环境预处理</div>
+        <div class="result-row"><span class="lbl">Conditions · 预处理条件</span><span class="val" id="off_r_precon"></span></div>
+        <div class="result-row"><span class="lbl">Duration · 预处理时间</span><span class="val" id="off_r_predur"></span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">Recommendation · 预处理建议</span><span class="val" id="off_r_preAdvice"></span></div>
       </div>
 
       <!-- Core Tests -->
       <div class="result-card" style="background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.3)">
-        <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:10px">🔬 核心测试 Core Tests</div>
+        <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:10px">🔬 Core Tests · 核心测试</div>
         <div class="result-row"><span class="lbl">ISTA 3-Lite 测试 ISTA 3-Lite Test</span><span class="val" id="off_r_core"></span></div>
-        <div class="result-row" style="border-bottom:none"><span class="lbl">压缩测试 Compression Test</span><span class="val" id="off_r_compress"></span></div>
+        <div class="result-row" style="border-bottom:none"><span class="lbl">Compression Test · 压缩测试</span><span class="val" id="off_r_compress"></span></div>
       </div>
 
       <!-- Optional Tests -->
       <div class="result-card" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3)">
-        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📋 可选附加测试 Optional Supplementary Tests</div>
-        <div class="result-row"><span class="lbl">滚动测试 Rolling Test</span><span class="val" id="off_r_roll"></span></div>
-        <div class="result-row"><span class="lbl">倾倒测试 Toppling/Tipping Test</span><span class="val" id="off_r_topple"></span></div>
-        <div class="result-row"><span class="lbl">静态堆码测试 Static Stacking Test</span><span class="val" id="off_r_stack"></span></div>
+        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">📋 Optional Supplementary Tests · 可选附加测试</div>
+        <div class="result-row"><span class="lbl">Rolling Test · 滚动测试</span><span class="val" id="off_r_roll"></span></div>
+        <div class="result-row"><span class="lbl">Toppling/Tipping Test · 倾倒测试</span><span class="val" id="off_r_topple"></span></div>
+        <div class="result-row"><span class="lbl">Static Stacking Test · 静态堆码测试</span><span class="val" id="off_r_stack"></span></div>
         <div style="font-size:11px;color:var(--slate-400);margin-top:8px;line-height:1.5">
           可选测试根据产品几何形状、重心位置和历史损坏模式决定是否执行。<br>
           Optional tests are applied based on product geometry, centre of gravity and historical damage modes.
@@ -911,7 +1061,7 @@
 <!-- ✅ Documents 独立模块 -->
 <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-top:12px;border:1px solid rgba(255,255,255,0.1)">
   <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.7);">
-    📎 生成报告 Referenced Test Documents
+    📎 Referenced Test Documents · 生成报告
   </div>
   <div id="off_r_docs" style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.8"></div>
 </div>
@@ -934,6 +1084,7 @@
     </button>
   </div>
 
+<div style="text-align:center;padding:4px 0 8px;font-size:10px;color:#94a3b8;">Usage data may be logged for tool improvement. · 本工具可能记录使用数据用于优化改进。</div>
 <div class="footer" id="mainFooter">Based on Signify Online Packaging Test Guideline Draft V10 · Dim Divisor=139, Rounding=0.5lb · Amazon FBA 2026 Non-Peak Rates · Overbox Estimator: adaptive padding 1"-2" per side, community box database</div>
 </div>
 
@@ -1168,6 +1319,16 @@ function $(id){ return document.getElementById(id); }
 function val(id){ return $(id).value; }
 function num(id){ return parseFloat($(id).value)||0; }
 
+
+function toggleSippReference(btn){
+  var el = $('sippReferenceContent');
+  if(!el) return;
+  el.classList.toggle('show');
+  var expanded = el.classList.contains('show');
+  var arrow = btn ? btn.querySelector('.arrow') : null;
+  if(arrow) arrow.textContent = expanded ? '▴' : '▾';
+}
+
 function toggleStep3Online(btn){
   ['onlineStep3Details','onlineResultDetails','assumptionBox','sec7'].forEach(function(id){
     var el=$(id); if(el) el.classList.toggle('show');
@@ -1181,6 +1342,13 @@ function toggleStep3Offline(btn){
   });
   var expanded = $('offlineStep3Details') && $('offlineStep3Details').classList.contains('show');
   if(btn) btn.textContent = expanded ? 'Hide Step 3 Details 收起详细分析' : 'Show Step 3 Details 展开详细分析';
+}
+function toggleExtraDecisionLogic(btn){
+  var block = $('xdlStepsBlock');
+  if(!block) return;
+  var isOpen = block.style.display === 'block';
+  block.style.display = isOpen ? 'none' : 'block';
+  if(btn) btn.textContent = isOpen ? 'Show Step 1–3 Logic / 展开 Step 1–3 逻辑' : 'Hide Step 1–3 Logic / 收起 Step 1–3 逻辑';
 }
 
 
@@ -1428,7 +1596,7 @@ function recalc(){
     $('ob_bufferRule').textContent = obBox.rule || '-';
     $('ob_tierJump').textContent = tierJumped ? '⚠️ YES — FBA费率跳档! FBA fee tier jump!' : '✅ No';
     $('ob_tierJump').style.color = tierJumped ? '#991b1b' : '#166534';
-    $('ob_annCB').textContent = obCbFee>0 ? '$'+obCbFee.toFixed(2)+'/unit × '+af+' = $'+obAnnCB.toFixed(0)+'/year' : '$0 (Sortable产品无罚款 No chargeback for Sortable)';
+    $('ob_annCB').textContent = obCbFee>0 ? '$'+obCbFee.toFixed(2)+'/unit × '+af+' = $'+obAnnCB.toFixed(0)+'/year' : '$0 (No chargeback for Sortable · Sortable产品无罚款)';
     $('ob_annJump').textContent = fbaJumpCost>0 ? '$'+fbaJumpCost.toFixed(2)+'/unit × '+af+' = $'+obAnnJump.toFixed(0)+'/year' : '$0 (无跳档)';
     $('ob_annPrep').textContent = '$'+prepFeeEst.toFixed(2)+'/unit × '+af+' = $'+obAnnPrep.toFixed(0)+'/year';
     $('ob_totalAnn').textContent = '$'+obTotalAnn.toFixed(0)+'/year';
@@ -1517,9 +1685,9 @@ function recalc(){
   $('sec7').style.display=isAmz?'block':'none';
 
   let ch;
-  if(isNAAmazon) ch='← NA默认多走SIPP, 成本输入用于FBA费用估算';
+  if(isNAAmazon) ch='← NA usually follows the SIPP path; these cost inputs are used for FBA cost estimation · NA默认多走SIPP, 成本输入用于FBA费用估算';
   else if(showCost) ch='← 需要填写成本输入 (用于SIPP成本对比 + FBA费用估算)';
-  else if(isAmz && isSortable && !tierJumped) ch='← Sortable产品: 成本输入用于对比升级包装 vs Prep Fee+FBA费差 / Sortable: cost inputs for upgrade vs prep+FBA diff comparison';
+  else if(isAmz && isSortable && !tierJumped) ch='← Sortable: cost inputs are used to compare upgrade vs estimated repacking/handling cost + FBA fee difference / Sortable产品：成本输入用于比较升级包装与估算的重包装/操作成本 + FBA费用差额';
   else if(isAmz && sipp!=='ELIGIBLE 合格') ch='← 不符合SIPP, 成本输入用于FBA费用估算 / Not SIPP eligible';
   else if(isAmz) ch='← 成本输入用于FBA费用估算';
   else ch='← 非Amazon路径';
@@ -1598,7 +1766,7 @@ function recalc(){
           testMethod=isFr?'第三方认证实验室\nCertified Lab':'Amazon自测跌落 (内部) 或 第三方认证实验室\nAmazon Self-Drop (internal) or Certified Lab';
           minSamp=isFr?'5 套 / 5 sets':'1 套 / 1 set';
           testProc=isFr?'Per ISTA 6A requirement':'Self-Drop or ISTA 6A';
-          decBasis='Sortable无罚款无跳档, 但升级包装更经济(避免Prep Fee+同档FBA费差)\nSortable, no chargeback/tier jump, but SIPP upgrade saves more than packaging cost increase';
+          decBasis='Sortable无罚款且无明显跳档，但升级包装在内部估算下更经济（可避免重包装/操作成本及潜在FBA费用差额）\nSortable, with no chargeback and no clear tier jump, but SIPP upgrade is still more economical under internal estimate because it avoids repacking/handling cost and potential FBA fee difference';
         } else {
           // Sortable no-jump, keep current
           pkgRoute='✅ 维持现有包装即可 (Sortable, 无罚款, Overbox不跳档)\nKeep current packaging (Sortable, no chargeback, no tier jump)';
@@ -1747,6 +1915,7 @@ $('r_docs').innerHTML = docsHtml;
 
   // ─── New Visual Cost Comparison Card ───
   $('costCompareCard').style.display = showCompare ? 'block' : 'none';
+  if($('extraDecisionLogic')) $('extraDecisionLogic').style.display = showCompare ? 'block' : 'none';
   if(showCompare){
     var annPackInc = incCost * tf;
     var annTestAmort = tc > 0 ? tc / ay : 0;
@@ -1766,6 +1935,36 @@ $('r_docs').innerHTML = docsHtml;
     $('cc_units').textContent = af+' units/year';
     $('cc_totalKeep').textContent = '$'+annNoSippTotal.toFixed(0)+'/year';
 
+    // Extra decision logic block
+    $('extraDecisionLogic').style.display = 'block';
+    $('xdlStepsBlock').style.display = 'none';
+    $('xdlToggleBtn').textContent = 'Show Step 1–3 Logic / 展开 Step 1–3 逻辑';
+
+    var xStep1Title = 'Will Amazon likely add overpacking / an overbox if current packaging is kept? / 如果维持当前包装，亚马逊是否大概率会加外箱？';
+    var xStep1Body = '';
+    if(isTooSmall){
+      xStep1Body = 'Current pack is too small for SIPP. Amazon is likely to use overboxing. 当前包装尺寸过小，不满足SIPP，亚马逊大概率会加外箱。';
+    } else if(isSortable && tierJumped){
+      xStep1Body = 'Current SIPP category is Sortable (≤18×14×8 in, ≤20 lb). Estimated overbox may push it into a higher FBA tier. 当前SIPP分类为Sortable，估算加外箱后可能进入更高FBA费率档。';
+    } else if(isSortable){
+      xStep1Body = 'Current SIPP category is Sortable. Estimated overbox does not create a major tier-jump risk, but prep fee and lost SIPP discount may still exist. 当前SIPP分类为Sortable，估算加外箱不会造成明显跳档，但仍可能带来预处理费和损失SIPP折扣。';
+    } else {
+      xStep1Body = 'Current pack already has non-sortable / overpacking-related cost exposure. 当前包装已存在非Sortable或加外箱相关成本暴露。';
+    }
+
+    var xStep2Title = 'Would enlarging / redesigning the box to avoid overpacking cost less than keeping current packaging? / 通过放大或重设计包装来避免加外箱，是否比维持现包装更省？';
+    var xStep2Body = 'Upgrade / redesign annual cost: $'+annUp.toFixed(0)+'/year. Keep current + overpacking-related annual extra cost: $'+annNoSippTotal.toFixed(0)+'/year. 升级/重设计包装年度成本：$'+annUp.toFixed(0)+'/年；维持现包装并接受加外箱相关额外成本：$'+annNoSippTotal.toFixed(0)+'/年。';
+
+    var xStep3Title = 'What happens if current packaging is kept? / 如果维持当前包装，会发生什么？';
+    var xStep3Body = 'Prep fee est.: $'+prepFeeEst.toFixed(2)+'/unit; FBA tier-jump cost: $'+fbaJumpCost.toFixed(2)+'/unit; Lost SIPP discount: $'+earlySippDisc.toFixed(2)+'/unit. 预处理费约：$'+prepFeeEst.toFixed(2)+'/件；FBA跳档成本：$'+fbaJumpCost.toFixed(2)+'/件；损失SIPP折扣：$'+earlySippDisc.toFixed(2)+'/件。';
+
+    $('xdl_step1_title').textContent = xStep1Title;
+    $('xdl_step1_body').textContent = xStep1Body;
+    $('xdl_step2_title').textContent = xStep2Title;
+    $('xdl_step2_body').textContent = xStep2Body;
+    $('xdl_step3_title').textContent = xStep3Title;
+    $('xdl_step3_body').textContent = xStep3Body;
+
     // Verdict (use annNoSippTotal which includes lost SIPP discount)
     var vd = $('cc_verdict');
     var vt = $('cc_verdictText');
@@ -1774,25 +1973,37 @@ $('r_docs').innerHTML = docsHtml;
 
     if(isSortable && !tierJumped){
       // Sortable no jump: compare costs (prep fee + within-tier FBA diff + lost SIPP discount)
-      var noSippNote = 'Sortable: 无Chargeback无跳档'+(fbaJumpCost>0?', 额外成本来自Prep Fee+同档FBA费差+损失折扣':' 额外成本来自Prep Fee+损失折扣')+' / No chargeback, no tier jump.';
+      var noSippNote = 'Sortable: 无Chargeback且无明确跳档'+(fbaJumpCost>0?'，额外成本来自内部估算的重包装/操作成本、潜在FBA费用差额及损失折扣':'，额外成本来自内部估算的重包装/操作成本及损失折扣')+' / Sortable: no chargeback and no clear tier jump; extra cost comes from internal estimate of repacking/handling cost'+(fbaJumpCost>0?', potential FBA fee difference':'')+' and lost discount.';
       if(annNoSippTotal > 0 && annUp <= annNoSippTotal){
         vd.style.background = 'rgba(5,150,105,0.2)';
         vd.style.border = '1.5px solid rgba(5,150,105,0.4)';
         vt.style.color = '#86efac';
         vt.textContent = '✅ 建议升级SIPP RECOMMEND UPGRADE — 年省 Save $'+(annNoSippTotal-annUp).toFixed(0)+'/year';
         vs.textContent = noSippNote+' 升级包装更经济 / Upgrade is more cost-effective.';
+        $('xdl_final').style.background = 'rgba(5,150,105,0.16)';
+        $('xdl_final').style.borderColor = 'rgba(5,150,105,0.35)';
+        $('xdl_final_title').textContent = 'Recommendation: enlarge / redesign the box (SIPP-oriented) to avoid overpacking-related cost.\n建议：放大或重设计包装（按SIPP方向），以避免加外箱相关成本。';
+        $('xdl_final_body').textContent = 'Because annual upgrade cost is lower than or equal to the estimated annual overpacking-related cost.\n因为年度升级成本低于或等于估算的年度加外箱相关成本。';
       } else if(annNoSippTotal > 200) {
         vd.style.background = 'rgba(245,158,11,0.15)';
         vd.style.border = '1.5px solid rgba(245,158,11,0.35)';
         vt.style.color = '#fde68a';
         vt.textContent = '⚠️ 维持包装但关注成本 KEEP but monitor — 不做SIPP仍有$'+annNoSippTotal.toFixed(0)+'/yr额外成本';
         vs.textContent = noSippNote+' 升级成本($'+annUp.toFixed(0)+') > 不做SIPP成本($'+annNoSippTotal.toFixed(0)+'), 暂不建议 · 可降低改善成本后重新评估';
+        $('xdl_final').style.background = 'rgba(245,158,11,0.15)';
+        $('xdl_final').style.borderColor = 'rgba(245,158,11,0.35)';
+        $('xdl_final_title').textContent = 'Recommendation: keep current packaging for now, but monitor overpacking-related cost.\n建议：当前阶段可维持现包装，但需持续关注加外箱相关成本。';
+        $('xdl_final_body').textContent = 'Because overpacking-related cost exists, but current upgrade cost is still higher than the estimated annual overpacking-related cost.\n因为加外箱相关成本已经存在，但当前包装升级成本仍高于估算的年度加外箱相关成本。';
       } else {
         vd.style.background = 'rgba(37,99,235,0.2)';
         vd.style.border = '1.5px solid rgba(37,99,235,0.4)';
         vt.style.color = '#93c5fd';
         vt.textContent = '✅ 维持现有包装 KEEP CURRENT PACKAGING';
         vs.textContent = noSippNote+' 额外成本很低($'+annNoSippTotal.toFixed(0)+'/yr), SIPP可选 / Extra cost minimal, SIPP optional.';
+        $('xdl_final').style.background = 'rgba(37,99,235,0.18)';
+        $('xdl_final').style.borderColor = 'rgba(37,99,235,0.4)';
+        $('xdl_final_title').textContent = 'Recommendation: keep current packaging; enlarging the box is optional rather than necessary.\n建议：维持当前包装，放大包装属于可选优化而非必须动作。';
+        $('xdl_final_body').textContent = 'Because the estimated overpacking-related extra cost is low and does not justify a packaging enlargement / redesign project at this stage.\n因为估算的加外箱相关额外成本较低，现阶段不足以支撑放大或重设计包装项目。';
       }
     } else if(annUp <= annNoSippTotal){
       // Upgrade is cheaper
@@ -1801,6 +2012,10 @@ $('r_docs').innerHTML = docsHtml;
       vt.style.color = '#86efac';
       vt.textContent = '✅ 建议升级SIPP RECOMMEND UPGRADE — 年省 Save $'+(annNoSippTotal-annUp).toFixed(0)+'/year';
       vs.textContent = '升级包装成本 < 不做SIPP的额外成本(含损失折扣) · Upgrade cost < No-SIPP extra cost · 盈亏平衡占比 Break-even: '+(beShare!==null?(beShare*100).toFixed(1)+'%':'-')+' · 实际Amazon占比 Actual: '+(actShare*100).toFixed(1)+'%';
+      $('xdl_final').style.background = 'rgba(5,150,105,0.16)';
+      $('xdl_final').style.borderColor = 'rgba(5,150,105,0.35)';
+      $('xdl_final_title').textContent = 'Recommendation: enlarge / redesign the box (SIPP-oriented) to avoid overpacking-related cost.\n建议：放大或重设计包装（按SIPP方向），以避免加外箱相关成本。';
+      $('xdl_final_body').textContent = 'Because annual upgrade cost is lower than the estimated annual overpacking-related cost, and the economics support pack redesign.\n因为年度升级成本低于估算的年度加外箱相关成本，从经济性上支持包装重设计。';
     } else {
       // Keep is cheaper
       vd.style.background = 'rgba(220,38,38,0.15)';
@@ -1808,6 +2023,10 @@ $('r_docs').innerHTML = docsHtml;
       vt.style.color = '#fca5a5';
       vt.textContent = '❌ 暂不建议升级 NOT RECOMMENDED — 升级成本高出 Higher by $'+(annUp-annNoSippTotal).toFixed(0)+'/year';
       vs.textContent = '升级包装成本 > 不做SIPP的额外成本(含损失折扣) · Upgrade cost > No-SIPP extra cost · 可考虑提高Amazon占比或降低包装改善成本后重新评估';
+      $('xdl_final').style.background = 'rgba(220,38,38,0.15)';
+      $('xdl_final').style.borderColor = 'rgba(220,38,38,0.35)';
+      $('xdl_final_title').textContent = 'Recommendation: keep current packaging instead of enlarging / redesigning the box.\n建议：维持当前包装，而不是放大或重设计包装。';
+      $('xdl_final_body').textContent = 'Because the annual upgrade cost is still higher than the estimated annual overpacking-related cost.\n因为年度升级成本仍高于估算的年度加外箱相关成本。';
     }
   }
 
@@ -2279,6 +2498,7 @@ function offlineCalc(){
   var projType = val('off_projType');
   var pf = val('off_productFamily');
   var packEU = val('off_packEurope');
+  var lampsFlow = val('off_lampsFlow');
   var region = val('off_salesRegion');
   var storageEnv = val('off_storageEnv');
   var storageTime = val('off_storageTime');
@@ -2291,6 +2511,7 @@ function offlineCalc(){
   var timeMidLong = storageTime.indexOf('6–12 months') >= 0;
   var timeLong = storageTime.indexOf('&gt;12 months') >= 0 || storageTime.indexOf('>12 months') >= 0;
   var isPackedEU = packEU.indexOf('Yes') >= 0;
+  var isLampsExportFlow = lampsFlow.indexOf('Export to other countries') >= 0;
   var isEuropeRegion = region.indexOf('Europe') >= 0;
   var isSpecial = projType.indexOf('Special') >= 0;
   var isCustStd = projType.indexOf('Customer') >= 0;
@@ -2303,18 +2524,22 @@ function offlineCalc(){
     // Customer standard or Special project: hide product family and sub-fields
     $('off_pfField').style.display = 'none';
     $('off_packField').style.display = 'none';
+    $('off_lampsFlowField').style.display = 'none';
     $('off_regionField').style.display = 'none';
   } else {
     // Standard Consumer: show product family and relevant sub-fields
     $('off_pfField').style.display = 'block';
     if (pf === 'LED Lamps') {
       $('off_packField').style.display = 'block';
+      $('off_lampsFlowField').style.display = isPackedEU ? 'block' : 'none';
       $('off_regionField').style.display = 'none';
     } else if (pf === 'LED LUM') {
       $('off_packField').style.display = 'none';
+      $('off_lampsFlowField').style.display = 'none';
       $('off_regionField').style.display = 'block';
     } else {
       $('off_packField').style.display = 'none';
+      $('off_lampsFlowField').style.display = 'none';
       $('off_regionField').style.display = 'none';
     }
   }
@@ -2334,9 +2559,9 @@ function offlineCalc(){
     minSamp = '按项目/BU要求\nPer project/BU requirement';
     decBasis = '特殊项目 — 按重量、尺寸、易碎性映射至相似产品类型\nSpecial project — mapped to similar product type by weight, dimensions and fragility';
   } else if (pf === 'LED Lamps') {
-    if (isPackedEU) {
+    if (isPackedEU && !isLampsExportFlow) {
       testStd = 'ISTA 3-Lite Test III\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
-      decBasis = 'LED Lamps → Packed in Europe offline packaging / palletized transport → ISTA 3-Lite Test III';
+      decBasis = 'LED Lamps → Packed in Europe + Europe domestic offline / palletized transport → ISTA 3-Lite Test III';
     } else {
       testStd = 'ISTA 3-Lite Test II\n(Signify internal standard based on ISTA 3A)\n文件: ISTA 3 Lite - rev 1.2_06-01-2023 2.pdf';
       decBasis = 'LED Lamps → Other offline flows (including exports from Europe or non-palletized transport) → ISTA 3-Lite Test II';
@@ -2530,7 +2755,13 @@ $('off_r_docs').innerHTML = docsHtml;
     addN('Packed in Europe offline packaging?','fc-decision');
     addA(isPackedEU ? 'Yes' : 'No');
     if (isPackedEU) {
-      addN('LED Lamps\nPacked in Europe offline packaging\n/ palletized transport\n\nTest standard:\nISTA 3-Lite Test III','fc-end');
+      addN('Export to other countries\nor non-palletized transport?','fc-decision');
+      addA(isLampsExportFlow ? 'Yes' : 'No');
+      if (isLampsExportFlow) {
+        addN('LED Lamps\nExport to other countries\nor non-palletized transport\n\nTest standard:\nISTA 3-Lite Test II','fc-end');
+      } else {
+        addN('LED Lamps\nPacked in Europe + Europe domestic offline\n/ palletized transport\n\nTest standard:\nISTA 3-Lite Test III','fc-end');
+      }
     } else {
       addN('LED Lamps\nOther offline flows\n(including exports from Europe\nor non-palletized transport)\n\nTest standard:\nISTA 3-Lite Test II','fc-end');
     }
@@ -2560,6 +2791,7 @@ function pdfRow(label, value){
 }
 
 function generatePdfReport(){
+  logToolUsage(true);
   const now = new Date();
   $('pdf_gen_time').textContent = now.toLocaleString();
 
@@ -2626,6 +2858,7 @@ function generatePdfReport(){
     inputRows += pdfRow('Project/Channel Type', val('off_projType'));
     inputRows += pdfRow('Product Family', $('off_pfField').style.display !== 'none' ? val('off_productFamily') : 'N/A');
     inputRows += pdfRow('Packed in Europe', $('off_packField').style.display !== 'none' ? val('off_packEurope') : 'N/A');
+    inputRows += pdfRow('LED Lamps Europe Flow / Transport Mode', $('off_lampsFlowField').style.display !== 'none' ? val('off_lampsFlow') : 'N/A');
     inputRows += pdfRow('Sales/Shipping Region', $('off_regionField').style.display !== 'none' ? val('off_salesRegion') : 'N/A');
     inputRows += pdfRow('Storage Environment Risk', val('off_storageEnv'));
     inputRows += pdfRow('Expected Storage Duration', val('off_storageTime'));
@@ -2662,17 +2895,84 @@ $('pdf_docs_rows').innerHTML = docsRows;
 $('pdfReport').style.display = 'block';
 document.body.classList.add('printing-pdf');
 
+function cleanupPrintMode() {
+  document.body.classList.remove('printing-pdf');
+  $('pdfReport').style.display = 'none';
+  window.removeEventListener('afterprint', cleanupPrintMode);
+}
+
+// 打印完成或取消后再恢复页面
+window.addEventListener('afterprint', cleanupPrintMode);
+
+// 给浏览器一点时间渲染打印内容，再打开打印框
 setTimeout(() => {
   window.print();
-
-  setTimeout(() => {
-    document.body.classList.remove('printing-pdf');
-    $('pdfReport').style.display = 'none';
-  }, 300);
-}, 100);
+}, 150);
 }
 // Init
 recalc();
 </script>
 </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://dzabigfqhmiywtducyly.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_D2GU4Ty2e3AedSZoHe5Z6w_fsbk5nsg';
+
+  const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function getSessionId() {
+    let sid = localStorage.getItem('packaging_tool_session_id');
+    if (!sid) {
+      sid = crypto.randomUUID();
+      localStorage.setItem('packaging_tool_session_id', sid);
+    }
+    return sid;
+  }
+
+  async function logToolUsage(pdfExported = false) {
+    try {
+      const inputData = {
+        channel: typeof currentChannel !== 'undefined' ? currentChannel : null,
+        region: document.getElementById('region') ? document.getElementById('region').value : null,
+        product_family: document.getElementById('productFamily') ? document.getElementById('productFamily').value : null,
+        amazon_sold: document.getElementById('amazonSold') ? document.getElementById('amazonSold').value : null,
+        fragility: document.getElementById('fragility') ? document.getElementById('fragility').value : null,
+        length: document.getElementById('length') ? document.getElementById('length').value : null,
+        width: document.getElementById('width') ? document.getElementById('width').value : null,
+        height: document.getElementById('height') ? document.getElementById('height').value : null,
+        weight: document.getElementById('weight') ? document.getElementById('weight').value : null,
+        amazon_share_pct: document.getElementById('amazonSharePct') ? document.getElementById('amazonSharePct').value : null
+      };
+
+      const resultData = {
+        decision_path: document.getElementById('r_dp') ? document.getElementById('r_dp').textContent : null,
+        packaging_route: document.getElementById('r_pkg') ? document.getElementById('r_pkg').textContent : null,
+        test_standard: document.getElementById('r_std') ? document.getElementById('r_std').textContent : null,
+        test_method: document.getElementById('r_method') ? document.getElementById('r_method').textContent : null,
+        min_samples: document.getElementById('r_samp') ? document.getElementById('r_samp').textContent : null,
+        decision_basis: document.getElementById('r_basis') ? document.getElementById('r_basis').textContent : null
+      };
+
+      const { error } = await sbClient
+        .from('tool_usage_logs')
+        .insert([{
+          session_id: getSessionId(),
+          channel: inputData.channel,
+          region: inputData.region,
+          product_family: inputData.product_family,
+          input_json: inputData,
+          result_json: resultData,
+          pdf_exported: pdfExported
+        }]);
+
+      if (error) {
+        console.error('Supabase insert failed:', error);
+      } else {
+        console.log('Usage logged successfully');
+      }
+    } catch (e) {
+      console.error('Logging error:', e);
+    }
+  }
+</script>
