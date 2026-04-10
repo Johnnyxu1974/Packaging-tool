@@ -627,7 +627,7 @@
     <div class="section-head"><div class="step-num">6</div><span class="section-title">💰 Cost Inputs (Amazon SIPP Path) · 成本输入</span></div>
     <div class="section-hint" id="costHint"></div>
     <div class="grid-3">
-      <div class="field"><label>Pack cost (USD/pc) · 当前包装成本</label><div class="field-row"><input type="number" id="packCost" value="1" step="0.01" onchange="recalc()" oninput="recalc()"><span class="unit">USD</span></div></div>
+      <div class="field"><label>Pack cost (USD/pc) · 当前包装成本</label><div class="field-row"><input type="number" id="packCost" value="1" step="0.01" onchange="recalc(); logPackCostChange()" oninput="recalc(); logPackCostChange()"><span class="unit">USD</span></div></div>
       <div class="field"><label>Annual total forecast · 年总预测量</label><div class="field-row"><input type="number" id="totalForecast" value="3000" onchange="recalc()" oninput="recalc()"><span class="unit">units</span></div></div>
       <div class="field"><label>Amazon share of total · Amazon占比</label><div class="field-row"><input type="number" id="amazonSharePct" value="60" step="0.1" min="0" max="100" onchange="recalc()" oninput="recalc()"><span class="unit">%</span></div>
         <div style="font-size:10px;color:var(--slate-400);margin-top:2px">= <span id="amazonUnitsCalc">200</span> Amazon units</div>
@@ -2912,13 +2912,10 @@ setTimeout(() => {
 // Init
 recalc();
 </script>
-</body>
-</html>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://dzabigfqhmiywtducyly.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_D2GU4Ty2e3AedSZoHe5Z6w_fsbk5nsg';
-
   const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   function getSessionId() {
@@ -2928,6 +2925,14 @@ recalc();
       localStorage.setItem('packaging_tool_session_id', sid);
     }
     return sid;
+  }
+
+  let packCostLogTimer = null;
+  function logPackCostChange() {
+    clearTimeout(packCostLogTimer);
+    packCostLogTimer = setTimeout(() => {
+      logToolUsage(false);
+    }, 1000);
   }
 
   async function logToolUsage(pdfExported = false) {
@@ -2942,7 +2947,8 @@ recalc();
         width: document.getElementById('width') ? document.getElementById('width').value : null,
         height: document.getElementById('height') ? document.getElementById('height').value : null,
         weight: document.getElementById('weight') ? document.getElementById('weight').value : null,
-        amazon_share_pct: document.getElementById('amazonSharePct') ? document.getElementById('amazonSharePct').value : null
+        amazon_share_pct: document.getElementById('amazonSharePct') ? document.getElementById('amazonSharePct').value : null,
+        pack_cost: document.getElementById('packCost') ? document.getElementById('packCost').value : null
       };
 
       const resultData = {
@@ -2976,3 +2982,6 @@ recalc();
     }
   }
 </script>
+
+</body>
+</html>
